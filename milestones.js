@@ -14,11 +14,13 @@ if(typeof window === 'undefined') {
     var fetch = require('node-fetch');
 }
 
+milestones.fetchFun = fetch;
+
 milestones.fetchAll = function fetchAll(output, organization, page) {
     var page=page||1;
     var baseUrl = 'https://api.github.com/orgs/'+organization+'/repos?page='+page;
     var headers;
-    return fetch(baseUrl).then(function(response){
+    return milestones.fetchFun(baseUrl).then(function(response){
         headers = response.headers.raw();
         return response.json();
     }).then(function(json) {
@@ -34,7 +36,7 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
         return Promise.all(
             projects.map(function(project){
                 var url = 'https://api.github.com/repos/'+organization+'/'+project.name+'/milestones?state=all';
-                return fetch(url).then(function(response){
+                return milestones.fetchFun(url).then(function(response){
                     return response.json();
                 }).then(function(mstones){
                     console.log("mstones", mstones)

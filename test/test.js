@@ -23,13 +23,20 @@ before(function(done){
 
 var org = 'codenautas';
 
+function fetchMock(url, opts) {
+    return Promise.resolve().then(function() {
+        console.log("url", url)
+        return false;
+    });
+}
+
+//milestones.fetchFun = fetchMock;
+
 describe('milestones', function(){
     it('storage', function(done){
         if(false) {
-            milestones.urls().forEach(function(url) {
-                console.log("url", url, milestones.getUrl(url).response);
-             });
-            //milestones.orgs().forEach(function(org) { console.log("org", org); });
+            // milestones.urls().forEach(function(url) { console.log("url", url, milestones.getUrl(url).response); });
+            //milestones.orgs().forEach(function(org) { console.log("org", milestones.getOrg(org)); });
             //console.log(milestones.storage);
             //console.log(milestones.getUrl('https://api.github.com/orgs/'+org+'/repos?page=1'));
             return done();
@@ -38,9 +45,7 @@ describe('milestones', function(){
         //console.log(milestones.testDir);
         var salida={};
         milestones.fetchAll(salida, org).then(function(salida) {
-            console.log("salida", JSON.stringify(salida))
-            milestones.urls().forEach(function(url) { console.log("url", url); });
-            milestones.orgs().forEach(function(org) { console.log("org", org); });
+            //console.log("salida", JSON.stringify(salida))
             var page1 = milestones.getUrl('https://api.github.com/orgs/'+org+'/repos?page=1');
             //console.log("page1", page1)
             if(page1.rateLimiteExceeded) {
