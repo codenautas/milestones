@@ -26,21 +26,23 @@ var org = 'codenautas';
 describe('milestones', function(){
     it('storage', function(done){
         if(false) {
-            console.log(milestones.storage);
-            console.log(milestones.getUrl('https://api.github.com/orgs/'+org+'/repos?page=1'));
+            milestones.urls().forEach(function(url) {
+                console.log("url", url, milestones.getUrl(url).response);
+             });
+            //milestones.orgs().forEach(function(org) { console.log("org", org); });
+            //console.log(milestones.storage);
+            //console.log(milestones.getUrl('https://api.github.com/orgs/'+org+'/repos?page=1'));
             return done();
         }        
         this.timeout(20000);
         //console.log(milestones.testDir);
         var salida={};
         milestones.fetchAll(salida, org).then(function(salida) {
-            milestones.urls().forEach(function(url) {
-                console.log("url", url);
-            });
-            milestones.orgs().forEach(function(org) {
-                console.log("org", org);
-            });
+            console.log("salida", JSON.stringify(salida))
+            milestones.urls().forEach(function(url) { console.log("url", url); });
+            milestones.orgs().forEach(function(org) { console.log("org", org); });
             var page1 = milestones.getUrl('https://api.github.com/orgs/'+org+'/repos?page=1');
+            //console.log("page1", page1)
             if(page1.rateLimiteExceeded) {
                 console.log('Request avalability ['+new Date(page1.headers['x-ratelimit-reset'] * 1000)+']');
             }

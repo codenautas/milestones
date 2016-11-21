@@ -16,13 +16,16 @@ if(typeof window === 'undefined') {
 
 milestones.fetchAll = function fetchAll(output, organization, page) {
     var page=page||1;
-    var baseUrl = 'https://api.github.com/orgs/'+organization+'/repos?page='+page; 
+    var baseUrl = 'https://api.github.com/orgs/'+organization+'/repos?page='+page;
+    var headers;
     return fetch(baseUrl).then(function(response){
-        var headers = response.headers.raw();
+        headers = response.headers.raw();
+        return response.json();
+    }).then(function(json) {
         //console.log("headers", headers);
-        var data = milestones.addUrl(baseUrl, headers, response.text(), response.json(), headers.status[0].match(/403/));
+        var data = milestones.addUrl(baseUrl, headers, json, headers.status[0].match(/403/));
         if(data.rateLimiteExceeded) { return false; }
-        return data.response.json;
+        return json;
     }).then(function(projects){
         if(! projects) {
             output = milestones.getOrg(organization);
@@ -59,8 +62,8 @@ function storeKeyIfNotExists(arrayName, key) {
     localStorage.setItem(arrayName, JSON.stringify(arr));
 }
 
-milestones.addUrl = function addUrl(url, headers, resText, resJson, rateLimiteExceeded) {
-    var urlData = {headers:headers, response:{text:resText, json:resJson}, rateLimiteExceeded:rateLimiteExceeded};
+milestones.addUrl = function addUrl(url, headers, resJson, rateLimiteExceeded) {
+    var urlData = {headers:headers, response:resJson, rateLimiteExceeded:rateLimiteExceeded};
     localStorage.setItem(url, JSON.stringify(urlData));
     storeKeyIfNotExists('urls', url);
     return urlData;
@@ -75,7 +78,7 @@ milestones.add = function add(title, organization, project, milestoneData) {
     org.milestones[title] = org.milestones[title] || {projects: {}};
     org.milestones[title].projects[project.name] = milestoneData;
     localStorage.setItem(organization, JSON.stringify(org));
-    storeKeyIfNotExists('orgs', org);
+    storeKeyIfNotExists('orgs', organization);
     return org.milestones[title];
 }
 milestones.orgs = function orgs() { return JSON.parse(localStorage.getItem('orgs') || '[]'); }
