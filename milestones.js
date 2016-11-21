@@ -20,25 +20,22 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
     return fetch(baseUrl).then(function(response){
         var headers = response.headers.raw();
         //console.log("headers", headers);
-        var json = response.json();
-        var data = milestones.addUrl(baseUrl, headers, json, headers.status[0].match(/403/));
-        if(data.rateLimiteExceeded) {
-            return false;
-        }
-        return json;
-    }).then(function(arr){
-        if(! arr) {
+        var data = milestones.addUrl(baseUrl, headers, response.json(), headers.status[0].match(/403/));
+        if(data.rateLimiteExceeded) { return false; }
+        return data.content;
+    }).then(function(projects){
+        if(! projects) {
             output = milestones.get(organization);
             return output;
         }
         return Promise.all(
-            arr.map(function(project){
+            projects.map(function(project){
                 var url = 'https://api.github.com/repos/'+organization+'/'+project.name+'/milestones?state=all';
                 return fetch(url).then(function(response){
                     return response.json();
-                }).then(function(arr){
-                    console.log("arr", arr)
-                    arr.forEach(function(milestone){
+                }).then(function(mstones){
+                    console.log("mstones", mstones)
+                    mstones.forEach(function(milestone){
                         milestones.add(milestone.title, organization, project.name, milestone);
                         output[milestone.title] = milestones[milestone.title] || { projects: {} };
                         output[milestone.title].projects[project.name] = milestone;
@@ -46,13 +43,13 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                 });
             })
         ).then(function(){
-            if(arr.length /* && false */){
+            if(projects.length /* && false */){
                 return milestones.fetchAll(output, organization, page+1);
             }
             return output;
         });
     }).catch(function(err) {
-        console.log("error", err)
+        console.log("fetchAll error:", err)
     });
 }
 
