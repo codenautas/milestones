@@ -21,9 +21,12 @@
   "homepage": "https://github.com/codenautas/milestones#readme",
   "devDependencies": {
     "expect.js": "~0.3.1",
+    "fs-promise": "~1.0.0",
     "istanbul": "~0.4.5",
     "mocha": "~3.1.2",
     "node-fetch": "~1.6.3",
-    "node-localstorage": "~1.3.0"
+    "node-localstorage": "~1.3.0",
+    
+    "best-promise": "~0.2.4"
   }
 }
