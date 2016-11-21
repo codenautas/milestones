@@ -4,6 +4,19 @@ var expect = require('expect.js');
 var milestones = require('../milestones.js');
 var fs = require('fs-promise');
 
+function genMockUrls(milestones) {
+    var mockedGitHub = {};
+    var urls = milestones.urls();
+    urls.forEach(function(url, index) {
+        var u = milestones.getUrl(url);
+        mockedGitHub[url] = {headers:u.headers, response:u.response};
+    });
+    return fs.writeJson('mockUrls.json', mockedGitHub).then(function() {
+        console.log("generated.")
+    });
+}
+
+var mockUrls;
 
 before(function(done){
     this.timeout(5000);
@@ -14,6 +27,14 @@ before(function(done){
         if(! existe) { return fs.mkdirs(milestones.testDir); }
     }).then(function() {
         //return fs.mkdirs(milestones.testDir);
+    // }).then(function() {
+        // return genMockUrls(milestones);
+    }).then(function() {
+        return fs.readJson(__dirname+'/mockUrls.json');
+    }).then(function(json) {
+        mockUrls = json;
+        //console.log("mockUrls", mockUrls)
+        console.log(Object.keys(mockUrls).length)
     }).then(function() {
         done();
     }).catch(function(err){
@@ -25,25 +46,27 @@ var org = 'codenautas';
 
 function fetchMock(url, opts) {
     return Promise.resolve().then(function() {
-        console.log("url", url)
-        return false;
+        var u = mockUrls[url];
+        var r = {};
+        r.headers = { raw:function() { return u.headers; } };
+        r.json = function() {
+            return Promise.resolve().then(function() {
+                return u.response;
+            })
+        };
+        return r;
     });
 }
-//milestones.fetchFun = fetchMock;
+// activar mocked urls
+milestones.fetchFun = fetchMock;
 
 describe('milestones', function(){
-    it('storage', function(done){
-        this.timeout(20000);
-        //console.log(milestones.testDir);
+    it/*.skip*/('mocked urls', function(done){
+        this.timeout(15000);
         var salida={};
         milestones.fetchAll(salida, org).then(function(salida) {
-            var urls = milestones.urls();
-            urls.forEach(function(url, index) {
-                var u = milestones.getUrl(url);
-                console.log('URL('+(index+1)+'/'+urls.length+') '+url /**,u.headers,*/ /*u.response*/);
-            });
-            //var u1 = 'https://api.github.com/orgs/codenautas/repos?page=1';
-            //console.log(u1, milestones.getUrl(u1).response);
+            expect(milestones.urls().length).to.eql(Object.keys(mockUrls).length);
+            expect(Object.keys(salida).length).to.eql(8)
             if(salida.rateLimitReset) {
                 console.log('Request avalability ['+salida.rateLimitReset+']');
             }

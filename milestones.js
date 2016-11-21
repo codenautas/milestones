@@ -16,7 +16,11 @@ if(typeof window === 'undefined') {
 
 milestones.fetchFun = fetch;
 
-function setDateOfLimitReset(rlr) { return new Date(rlr * 1000); }
+function finishRequest(out, organization, headers) {
+    out = milestones.getOrg(organization) || {};
+    out.rateLimitReset = new Date(headers['x-ratelimit-reset'] * 1000);
+    return out;
+}
 
 milestones.fetchAll = function fetchAll(output, organization, page) {
     var page=page||1;
@@ -25,16 +29,14 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
     return milestones.fetchFun(baseUrl).then(function(response){
         headers = response.headers.raw();
         return response.json();
-    }).then(function(json) {
-        if(! milestones.addUrl(baseUrl, headers, json)) {
+    }).then(function(rjson) {
+        if(! milestones.addUrl(baseUrl, headers, rjson)) {
             return false;
         }
-        return json;
+        return rjson;
     }).then(function(projects){
         if(! projects) {
-            output = milestones.getOrg(organization) || {};
-            output.rateLimitReset = setDateOfLimitReset(headers['x-ratelimit-reset']);
-            return output;
+            return finishRequest(output, organization, headers);
         } else {
             return Promise.all(
                 projects.map(function(project){
@@ -44,8 +46,7 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                         return response.json();
                     }).then(function(mstones){
                         if(! milestones.addUrl(url, headers, mstones)) {
-                            output = milestones.getOrg(organization) || {};
-                            output.rateLimitReset = setDateOfLimitReset(headers['x-ratelimit-reset']);
+                            finishRequest(output, organization, headers);
                         } else {
                             mstones.forEach(function(milestone){
                                 milestones.add(milestone.title, organization, project.name, milestone);
@@ -73,11 +74,11 @@ function storeKeyIfNotExists(arrayName, key) {
     localStorage.setItem(arrayName, JSON.stringify(arr));
 }
 
-milestones.addUrl = function addUrl(url, headers, resJson) {
+milestones.addUrl = function addUrl(url, headers, data) {
     var limit = headers.status[0].match(/403/);
     var limitReached = limit && limit.length>0;
     if(! limitReached) {
-        localStorage.setItem(url, JSON.stringify({headers:headers, response:resJson}));
+        localStorage.setItem(url, JSON.stringify({headers:headers, response:data}));
         storeKeyIfNotExists('urls', url);
     }
     return ! limitReached;
