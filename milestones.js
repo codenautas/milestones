@@ -16,6 +16,8 @@ if(typeof window === 'undefined') {
 
 milestones.fetchFun = fetch;
 
+function setDateOfLimitReset(rlr) { return new Date(rlr * 1000); }
+
 milestones.fetchAll = function fetchAll(output, organization, page) {
     var page=page||1;
     var baseUrl = 'https://api.github.com/orgs/'+organization+'/repos?page='+page;
@@ -24,37 +26,44 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
         headers = response.headers.raw();
         return response.json();
     }).then(function(json) {
-        //console.log("headers", headers);
-        var data = milestones.addUrl(baseUrl, headers, json, headers.status[0].match(/403/));
-        if(data.rateLimiteExceeded) { return false; }
+        if(! milestones.addUrl(baseUrl, headers, json)) {
+            return false;
+        }
         return json;
     }).then(function(projects){
         if(! projects) {
-            output = milestones.getOrg(organization);
+            output = milestones.getOrg(organization) || {};
+            output.rateLimitReset = setDateOfLimitReset(headers['x-ratelimit-reset']);
             return output;
-        }
-        return Promise.all(
-            projects.map(function(project){
-                var url = 'https://api.github.com/repos/'+organization+'/'+project.name+'/milestones?state=all';
-                return milestones.fetchFun(url).then(function(response){
-                    return response.json();
-                }).then(function(mstones){
-                    console.log("mstones", mstones)
-                    mstones.forEach(function(milestone){
-                        milestones.add(milestone.title, organization, project.name, milestone);
-                        output[milestone.title] = milestones[milestone.title] || { projects: {} };
-                        output[milestone.title].projects[project.name] = milestone;
+        } else {
+            return Promise.all(
+                projects.map(function(project){
+                    var url = 'https://api.github.com/repos/'+organization+'/'+project.name+'/milestones?state=all';
+                    return milestones.fetchFun(url).then(function(response){
+                        headers = response.headers.raw();
+                        return response.json();
+                    }).then(function(mstones){
+                        if(! milestones.addUrl(url, headers, mstones)) {
+                            output = milestones.getOrg(organization) || {};
+                            output.rateLimitReset = setDateOfLimitReset(headers['x-ratelimit-reset']);
+                        } else {
+                            mstones.forEach(function(milestone){
+                                milestones.add(milestone.title, organization, project.name, milestone);
+                                output[milestone.title] = milestones[milestone.title] || { projects: {} };
+                                output[milestone.title].projects[project.name] = milestone;
+                            });
+                        }
                     });
-                });
-            })
-        ).then(function(){
-            if(projects.length /* && false */){
-                return milestones.fetchAll(output, organization, page+1);
-            }
-            return output;
-        });
+                })).then(function(){
+                if(projects.length /* && false */){
+                    return milestones.fetchAll(output, organization, page+1);
+                }
+                //console.log("output", output);
+                return output;
+            });
+        }
     }).catch(function(err) {
-        console.log("fetchAll error:", err)
+        console.log("fetchAll error:", err.stack)
     });
 }
 
@@ -64,11 +73,14 @@ function storeKeyIfNotExists(arrayName, key) {
     localStorage.setItem(arrayName, JSON.stringify(arr));
 }
 
-milestones.addUrl = function addUrl(url, headers, resJson, rateLimiteExceeded) {
-    var urlData = {headers:headers, response:resJson, rateLimiteExceeded:rateLimiteExceeded};
-    localStorage.setItem(url, JSON.stringify(urlData));
-    storeKeyIfNotExists('urls', url);
-    return urlData;
+milestones.addUrl = function addUrl(url, headers, resJson) {
+    var limit = headers.status[0].match(/403/);
+    var limitReached = limit && limit.length>0;
+    if(! limitReached) {
+        localStorage.setItem(url, JSON.stringify({headers:headers, response:resJson}));
+        storeKeyIfNotExists('urls', url);
+    }
+    return ! limitReached;
 };
 
 milestones.urls = function urls() { return JSON.parse(localStorage.getItem('urls') || '[]'); }
