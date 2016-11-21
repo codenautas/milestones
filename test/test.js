@@ -21,17 +21,23 @@ before(function(done){
     });
 });
 
+var org = 'codenautas';
+
 describe('milestones', function(){
     it('storage', function(done){
-        //console.log(milestones.storage); return done();
+        if(false) {
+            console.log(milestones.storage);
+            console.log(milestones.getUrl('https://api.github.com/orgs/'+org+'/repos?page=1'));
+            return done();
+        }        
         this.timeout(20000);
         console.log(milestones.testDir);
-        milestones.fetchAll(milestones).then(function() {
-            var page1 = milestones.getUrl('https://api.github.com/orgs/codenautas/repos?page=1');
+        var salida={};
+        milestones.fetchAll(salida, org).then(function(salida) {
+            var page1 = milestones.getUrl('https://api.github.com/orgs/'+org+'/repos?page=1');
             if(page1.rateLimiteExceeded) {
-                console.log('Requeset avalability at '+new Date(page1.headers['x-ratelimit-reset'] * 1000));
+                console.log('Request avalability ['+new Date(page1.headers['x-ratelimit-reset'] * 1000)+']');
             }
-            
             //console.log(milestones.storage);
             //console.log("URL", page1);
             done();
