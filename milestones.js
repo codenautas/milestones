@@ -20,12 +20,12 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
     return fetch(baseUrl).then(function(response){
         var headers = response.headers.raw();
         //console.log("headers", headers);
-        var data = milestones.addUrl(baseUrl, headers, response.json(), headers.status[0].match(/403/));
+        var data = milestones.addUrl(baseUrl, headers, response.text(), response.json(), headers.status[0].match(/403/));
         if(data.rateLimiteExceeded) { return false; }
-        return data.content;
+        return data.response.json;
     }).then(function(projects){
         if(! projects) {
-            output = milestones.get(organization);
+            output = milestones.getOrg(organization);
             return output;
         }
         return Promise.all(
@@ -54,31 +54,33 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
 }
 
 function storeKeyIfNotExists(arrayName, key) {
-    var arr = JSON.parse(localStorage.getItem(arrayName) || "[]");
+    var arr = JSON.parse(localStorage.getItem(arrayName) || '[]');
     if(arr.indexOf(key)===-1) { arr.push(key); }
     localStorage.setItem(arrayName, JSON.stringify(arr));
 }
 
-milestones.addUrl = function addUrl(url, headers, content, rateLimiteExceeded) {
-    var urlData = {headers:headers, content: content, rateLimiteExceeded:rateLimiteExceeded};
+milestones.addUrl = function addUrl(url, headers, resText, resJson, rateLimiteExceeded) {
+    var urlData = {headers:headers, response:{text:resText, json:resJson}, rateLimiteExceeded:rateLimiteExceeded};
     localStorage.setItem(url, JSON.stringify(urlData));
     storeKeyIfNotExists('urls', url);
     return urlData;
 };
 
+milestones.urls = function urls() { return JSON.parse(localStorage.getItem('urls') || '[]'); }
 milestones.getUrl = function getUrl(url) { return JSON.parse(localStorage.getItem(url)); };
 
-milestones.add = function add(title, organization, project, data) {
-    var org = JSON.parse(localStorage.getItem(organization) || "{}");
+milestones.add = function add(title, organization, project, milestoneData) {
+    var org = JSON.parse(localStorage.getItem(organization) || '{}');
     org.milestones = org.milestones || {};
     org.milestones[title] = org.milestones[title] || {projects: {}};
-    org.milestones[title].projects[project.name] = data;
+    org.milestones[title].projects[project.name] = milestoneData;
     localStorage.setItem(organization, JSON.stringify(org));
     storeKeyIfNotExists('orgs', org);
     return org.milestones[title];
 }
+milestones.orgs = function orgs() { return JSON.parse(localStorage.getItem('orgs') || '[]'); }
 
-milestones.get = function get(organization) {
+milestones.getOrg = function getOrg(organization) {
     return JSON.parse(localStorage.getItem(organization));
 };
 

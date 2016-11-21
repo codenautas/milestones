@@ -31,9 +31,15 @@ describe('milestones', function(){
             return done();
         }        
         this.timeout(20000);
-        console.log(milestones.testDir);
+        //console.log(milestones.testDir);
         var salida={};
         milestones.fetchAll(salida, org).then(function(salida) {
+            milestones.urls().forEach(function(url) {
+                console.log("url", url);
+            });
+            milestones.orgs().forEach(function(org) {
+                console.log("org", org);
+            });
             var page1 = milestones.getUrl('https://api.github.com/orgs/'+org+'/repos?page=1');
             if(page1.rateLimiteExceeded) {
                 console.log('Request avalability ['+new Date(page1.headers['x-ratelimit-reset'] * 1000)+']');
