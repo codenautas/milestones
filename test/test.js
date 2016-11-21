@@ -3,6 +3,7 @@
 var expect = require('expect.js');
 var milestones = require('../milestones.js');
 var fs = require('fs-promise');
+var sinon = require('sinon');
 
 function genMockUrls(milestones) {
     var mockedGitHub = {};
@@ -23,7 +24,10 @@ before(function(done){
     Promise.resolve().then(function() {
         return fs.exists(milestones.testDir);
     }).then(function(existe) {
-        //if(existe) { return fs.remove(milestones.testDir); }
+        // if(existe) {
+            // console.log("removing ", milestones.testDir);
+            // return fs.remove(milestones.testDir);
+        // }
         if(! existe) { return fs.mkdirs(milestones.testDir); }
     }).then(function() {
         //return fs.mkdirs(milestones.testDir);
@@ -34,7 +38,6 @@ before(function(done){
     }).then(function(json) {
         mockUrls = json;
         //console.log("mockUrls", mockUrls)
-        console.log(Object.keys(mockUrls).length)
     }).then(function() {
         done();
     }).catch(function(err){
@@ -57,19 +60,20 @@ function fetchMock(url, opts) {
         return r;
     });
 }
-// activar mocked urls
-milestones.fetchFun = fetchMock;
 
 describe('milestones', function(){
     it/*.skip*/('mocked urls', function(done){
         this.timeout(15000);
         var salida={};
+        sinon.stub(milestones, "fetchFun", fetchMock);
         milestones.fetchAll(salida, org).then(function(salida) {
+            console.log("milestones.urls()", milestones.urls())
             expect(milestones.urls().length).to.eql(Object.keys(mockUrls).length);
-            expect(Object.keys(salida).length).to.eql(8)
+            expect(Object.keys(salida).length).to.eql(8);
             if(salida.rateLimitReset) {
                 console.log('Request avalability ['+salida.rateLimitReset+']');
             }
+            milestones.fetchFun.restore();
             done();
         }).catch(function(err) {
             done(err);
