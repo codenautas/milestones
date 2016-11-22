@@ -64,7 +64,9 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                                 milestones.add(milestone.title, organization, project.name, milestone);
                                 output.projects = output.projects || {};
                                 if(! (project.name in output.projects)) {
-                                    output.projects[project.name] = {}; //milestone;
+                                    output.projects[project.name] = {
+                                        url: 'https://github.com/'+organization+'/'+project.name+'/milestones'
+                                    }; //milestone;
                                 }
                                 output[milestone.title] = output[milestone.title] || { projects: {} };
                                 output[milestone.title].projects[project.name] = output.projects[project.name];

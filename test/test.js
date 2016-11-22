@@ -96,12 +96,36 @@ describe('milestones', function(){
         });
         describe('projects', function() {
             [
-                {name:'mini-tools', data:{}},
-                {name:'login-plus', data:{}},
-                {name:'backend-plus', data:{}},
-                {name:'dialog-promise', data:{}},
-                {name:'milestones', data:{}},
-                {name:'txt-to-sql', data:{}},
+                {name:'mini-tools',
+                      data:{
+                          url: 'https://github.com/codenautas/mini-tools/milestones'
+                      }
+                },
+                {name:'login-plus',
+                      data:{
+                          url: 'https://github.com/codenautas/login-plus/milestones'
+                      }
+                },
+                {name:'backend-plus',
+                      data:{
+                          url: 'https://github.com/codenautas/backend-plus/milestones'
+                      }
+                },
+                {name:'dialog-promise',
+                      data:{
+                          url: 'https://github.com/codenautas/dialog-promise/milestones'
+                      }
+                },
+                {name:'milestones',
+                      data:{
+                          url: 'https://github.com/codenautas/milestones/milestones'
+                      }
+                },
+                {name:'txt-to-sql',
+                      data:{
+                          url: 'https://github.com/codenautas/txt-to-sql/milestones'
+                      }
+                },
             ].forEach(function(project) {
                 if(project.skip) {
                     it.skip(project.name);
