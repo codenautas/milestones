@@ -89,20 +89,67 @@ describe('milestones', function(){
                  'milestones':{
                      url: 'https://github.com/codenautas/milestones/milestones'
                  },
-            }},
-            {skip:true, name:'Aceptable', projects:['mini-tools','login-plus','backend-plus','dialog-promise','milestones']},
-            {skip:true, name:'Buena', projects:['backend-plus']},
-            {skip:true, name:'Bueno', projects:['mini-tools','login-plus','dialog-promise']},
-            {skip:true, name:'Completo', projects:['txt-to-sql']},
-            {skip:true, name:'Común', projects:['backend-plus', 'dialog-promise']},
-            {skip:true, name:'Lanzamiento', projects:['login-plus','backend-plus']},
-            {skip:true, name:'Versión 3 pasos', projects:['txt-to-sql']},
-            {skip:true, name:'Versión inicial', projects:['txt-to-sql']},
+             }},
+            {name:'Buena',
+             projects:{
+                 'backend-plus':{
+                     url: 'https://github.com/codenautas/backend-plus/milestones'
+                 }
+             }},
+            {name:'Bueno',
+             projects:{
+                 'mini-tools':{
+                     url: 'https://github.com/codenautas/mini-tools/milestones'
+                 },
+                 'login-plus':{
+                     url: 'https://github.com/codenautas/login-plus/milestones'
+                 },
+                 'dialog-promise':{
+                     url: 'https://github.com/codenautas/dialog-promise/milestones'
+                 },
+             }},
+            {name:'Completo',
+             projects:{
+                 'txt-to-sql':{
+                     url: 'https://github.com/codenautas/txt-to-sql/milestones'
+                 }
+             }},
+            {name:'Común',
+             projects:{
+                 'backend-plus':{
+                     url: 'https://github.com/codenautas/backend-plus/milestones'
+                 },
+                 'dialog-promise':{
+                     url: 'https://github.com/codenautas/dialog-promise/milestones'
+                 },
+             }},
+            {name:'Lanzamiento',
+             projects:{
+                 'login-plus':{
+                     url: 'https://github.com/codenautas/login-plus/milestones'
+                 },
+                 'backend-plus':{
+                     url: 'https://github.com/codenautas/backend-plus/milestones'
+                 },
+             }},
+            {name:'Versión 3 pasos',
+             projects:{
+                 'txt-to-sql':{
+                     url: 'https://github.com/codenautas/txt-to-sql/milestones'
+                 }
+             }},
+            {name:'Versión inicial',
+             projects:{
+                 'txt-to-sql':{
+                     url: 'https://github.com/codenautas/txt-to-sql/milestones'
+                 }
+             }},
         ].forEach(function(milestone) {
+            var name='fetch '+milestone.name;
             if(milestone.skip) {
-                it.skip(milestone.name);
+                it.skip(name);
             } else {
-                it(milestone.name, function(done) {
+                it(name, function(done) {
                     //console.log("salida", salida)
                     var ms = salida[milestone.name];
                     expect(ms.projects).to.eql(milestone.projects)
