@@ -6,8 +6,9 @@ if (typeof localStorage === "undefined" || localStorage === null) {
   milestones.testDir = require('../util/test-dir.js').getDir('milestones-storage');
   //var LocalStorage = require('node-localstorage').LocalStorage;
   // var localStorage = new LocalStorage(milestones.testDir);
+  var Path = require('path');
   var Storage = require('dom-storage');
-  var localStorage = new Storage(milestones.testDir, { strict: false, ws: '  ' });
+  var localStorage = new Storage(Path.normalize(milestones.testDir+'/db.json'), { strict: true, ws: '  ' });
   milestones.storage = localStorage;
 }
 

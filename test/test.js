@@ -30,7 +30,7 @@ before(function(done){
         }
     }).then(function() {
         return fs.mkdirs(milestones.testDir);
-    }).then(function() {
+    //}).then(function() {
         // return genMockUrls(milestones);
     }).then(function() {
         return fs.readJson(__dirname+'/mockUrls.json');
