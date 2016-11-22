@@ -53,7 +53,7 @@ function fetchAllMock(url, opts) {
 describe('milestones', function(){
     describe('mocked urls', function(){
         var salida={};
-        // atencion: para correr los siguientes nunca saltear este
+        // ATENCION: para correr los siguientes nunca saltear este
         it('fetch all', function(done){
             sinon.stub(milestones, "fetchFun", fetchAllMock);
             milestones.fetchAll(salida, org).then(function(salida) {
@@ -61,27 +61,24 @@ describe('milestones', function(){
                 expect(milestones.urls().length).to.eql(Object.keys(mockUrls).length);
                 expect(Object.keys(salida).length).to.eql(8);
                 expect(salida.rateLimitReset).to.be(undefined);
-                               milestones.fetchFun.restore();
                 // Object.keys(salida).forEach(function(ms) {
-                    // console.log("ms", ms)
-                    // Object.keys(salida[ms].projects).forEach(function(project) {
-                        // console.log("  ", project)
-                    // });
+                    // console.log(ms); Object.keys(salida[ms].projects).forEach(function(project) { console.log("  ", project); });
                 // });
+                milestones.fetchFun.restore();
                 done();
             }).catch(function(err) {
                 done(err);
             });
         });
         [
-            {skip:true, name:'Aceptable', projects:['milestones']},
-            {skip:true, name:'Buena'},
-            {skip:true, name:'Bueno'},
-            {skip:true, name:'Completo'},
+            {name:'Aceptable', projects:['mini-tools','login-plus','backend-plus','dialog-promise','milestones']},
+            {name:'Buena', projects:['backend-plus']},
+            {name:'Bueno', projects:['mini-tools','login-plus','dialog-promise']},
+            {name:'Completo', projects:['txt-to-sql']},
             {name:'Común', projects:['backend-plus', 'dialog-promise']},
-            {skip:true, name:'Lanzamiento'},
-            {skip:true, name:'Versión 3 pasos'},
-            {skip:true, name:'Versión inicial'},
+            {name:'Lanzamiento', projects:['login-plus','backend-plus']},
+            {name:'Versión 3 pasos', projects:['txt-to-sql']},
+            {name:'Versión inicial', projects:['txt-to-sql']},
         ].forEach(function(milestone) {
             if(milestone.skip) {
                 it.skip(milestone.name);
