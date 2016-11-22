@@ -80,7 +80,8 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                                     state: milestone.state,
                                     date: milestone.closed_at || milestone.due_on, // closed_at es null si está abierto
                                     daysFromUpdate: milestones.milisecondsToDays(Date.now()-new Date(milestone.updated_at).getTime()),
-                                    pctComplete: pct
+                                    pctComplete: pct,
+                                    issues: {open:milestone.open_issues, closed:milestone.closed_issues}
                                 };
                             });
                         }
