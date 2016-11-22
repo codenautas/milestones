@@ -66,7 +66,8 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                                 //output[milestone.title].projects[project.name] = milestone;
                                 output[milestone.title].projects[project.name] = {
                                     url: 'https://github.com/'+organization+'/'+project.name+'/milestones',
-                                    state: milestone.state
+                                    state: milestone.state,
+                                    date: milestone.closed_at || milestone.due_on // closed_at es null si está abierto
                                 };
                             });
                         }
