@@ -56,6 +56,7 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                         headers = response.headers;
                         return response.json();
                     }).then(function(mstones){
+                        //console.log("mstones", mstones)
                         if(! milestones.addUrl(url, headers, mstones)) {
                             finishRequest(output, organization, headers);
                         } else {
@@ -88,8 +89,6 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                 return output;
             });
         }
-    }).catch(function(err) {
-        console.log("fetchAll error:", err.stack)
     });
 }
 
@@ -112,9 +111,9 @@ milestones.addUrl = function addUrl(url, headers, data) {
                 limitResetTime:headers.get('X-RateLimit-Reset')
             })
         );
-        storeKeyIfNotExists('urls', url);
+        storeKeyIfNotExists('urls', url);   
     }
-    return ! limitReached;
+    return localStorage.getItem(url);
 };
 
 milestones.urls = function urls() { return JSON.parse(localStorage.getItem('urls') || '[]'); }
