@@ -10,7 +10,8 @@ function genMockUrls(milestones) {
     var urls = milestones.urls();
     urls.forEach(function(url, index) {
         var u = milestones.getUrl(url);
-        mockedGitHub[url] = {headers:u.headers, response:u.response};
+        if(u) { mockedGitHub[url] = u; }
+        //mockedGitHub[url] = {headers:u.headers, response:u.response};
     });
     return fs.writeJson('mockUrls.json', mockedGitHub).then(function() {
         console.log("generated.")
@@ -24,21 +25,18 @@ before(function(done){
     Promise.resolve().then(function() {
         return fs.exists(milestones.testDir);
     }).then(function(existe) {
-        if(existe) {
-            console.log("removing ", milestones.testDir);
-            return fs.remove(milestones.testDir);
-        }
+        if(existe) { return fs.remove(milestones.testDir);  }
     }).then(function() {
         return fs.mkdirs(milestones.testDir);
-    //}).then(function() {
-        // return genMockUrls(milestones);
     }).then(function() {
         return fs.readJson(__dirname+'/mockUrls.json');
     }).then(function(json) {
         mockUrls = json;
-        //console.log("mockUrls", mockUrls)
     }).then(function() {
+        // node-persist requiere esto!
         return milestones.storageInit();
+    // }).then(function() {
+        // return genMockUrls(milestones);
     }).then(function() {
         done();
     }).catch(function(err){
@@ -68,21 +66,41 @@ function fetchMock(url, opts) {
 }
 
 describe('milestones', function(){
-    it/*.skip*/('mocked urls', function(done){
-        this.timeout(15000);
-        var salida={};
-        sinon.stub(milestones, "fetchFun", fetchMock);
-        milestones.fetchAll(salida, org).then(function(salida) {
-            //console.log("milestones.urls()", milestones.urls())
-            expect(milestones.urls().length).to.eql(Object.keys(mockUrls).length);
-            expect(Object.keys(salida).length).to.eql(8);
-            if(salida.rateLimitReset) {
-                console.log('Request avalability ['+salida.rateLimitReset+']');
-            }
-            milestones.fetchFun.restore();
-            done();
-        }).catch(function(err) {
-            done(err);
+    describe('mocked urls', function(){
+        it('fetch all', function(done){
+            var salida={};
+            sinon.stub(milestones, "fetchFun", fetchMock);
+            milestones.fetchAll(salida, org).then(function(salida) {
+                //console.log("milestones.urls()", milestones.urls())
+                expect(milestones.urls().length).to.eql(Object.keys(mockUrls).length);
+                expect(Object.keys(salida).length).to.eql(8);
+                expect(salida.rateLimitReset).to.be(undefined);
+                if(salida.rateLimitReset) {
+                    console.log('Request avalability ['+salida.rateLimitReset+']');
+                }
+                milestones.fetchFun.restore();
+                done();
+            }).catch(function(err) {
+                done(err);
+            });
         });
+    });
+    describe.skip('real', function() {
+        before(function() {
+            milestones.storage.clear();
+        });
+        it('???', function(done){
+            this.timeout(15000);
+            var salida={};
+            milestones.fetchAll(salida, org).then(function(salida) {
+                //console.log("milestones.urls()", milestones.urls())
+                if(salida.rateLimitReset) {
+                    console.log('Request avalability ['+salida.rateLimitReset+']');
+                }
+                done();
+            }).catch(function(err) {
+                done(err);
+            });
+        });        
     });
 });

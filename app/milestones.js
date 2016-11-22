@@ -12,9 +12,9 @@ if (typeof localStorage === "undefined" || localStorage === null) {
     var storage = require('node-persist');
     var localStorage = {};
     milestones.storageInit = function() {
-        console.log("storageInit");
         storage.initSync({dir:milestones.testDir});
-        localStorage.getItem = storage.getItemSync;
+        // getItemSync() devuelve undefined si key no está!
+        localStorage.getItem = function(key) { return storage.getItemSync(key)||null; };
         localStorage.setItem = storage.setItemSync;
         localStorage.removeItem = storage.removeItemSync;
         localStorage.clear = storage.clearSync;
