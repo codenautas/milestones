@@ -24,14 +24,13 @@ before(function(done){
     Promise.resolve().then(function() {
         return fs.exists(milestones.testDir);
     }).then(function(existe) {
-        // if(existe) {
-            // console.log("removing ", milestones.testDir);
-            // return fs.remove(milestones.testDir);
-        // }
-        if(! existe) { return fs.mkdirs(milestones.testDir); }
+        if(existe) {
+            console.log("removing ", milestones.testDir);
+            return fs.remove(milestones.testDir);
+        }
     }).then(function() {
-        //return fs.mkdirs(milestones.testDir);
-    // }).then(function() {
+        return fs.mkdirs(milestones.testDir);
+    }).then(function() {
         // return genMockUrls(milestones);
     }).then(function() {
         return fs.readJson(__dirname+'/mockUrls.json');

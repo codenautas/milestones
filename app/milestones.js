@@ -3,10 +3,11 @@
 var milestones = {};
 
 if (typeof localStorage === "undefined" || localStorage === null) {
-  var testDir = require('../util/test-dir.js');
-  var LocalStorage = require('node-localstorage').LocalStorage;
-  milestones.testDir = testDir.getDir('milestones-storage');
-  var localStorage = new LocalStorage(milestones.testDir);
+  milestones.testDir = require('../util/test-dir.js').getDir('milestones-storage');
+  //var LocalStorage = require('node-localstorage').LocalStorage;
+  // var localStorage = new LocalStorage(milestones.testDir);
+  var Storage = require('dom-storage');
+  var localStorage = new Storage(milestones.testDir, { strict: false, ws: '  ' });
   milestones.storage = localStorage;
 }
 
