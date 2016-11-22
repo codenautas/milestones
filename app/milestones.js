@@ -65,9 +65,9 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                                 output[milestone.title] = output[milestone.title] || { projects: {} };
                                 //output[milestone.title].projects[project.name] = milestone;
                                 output[milestone.title].projects[project.name] = {
-                                    url: 'https://github.com/'+organization+'/'+project.name+'/milestones'
+                                    url: 'https://github.com/'+organization+'/'+project.name+'/milestones',
+                                    state: milestone.state
                                 };
-                                //console.log("state", milestone.state, milestone.title, project.name)
                             });
                         }
                     });

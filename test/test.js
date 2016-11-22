@@ -75,73 +75,73 @@ describe('milestones', function(){
             {name:'Aceptable',
              projects:{
                  'mini-tools':{
-                     url: 'https://github.com/codenautas/mini-tools/milestones'
+                     url: 'https://github.com/codenautas/mini-tools/milestones', state:'open'
                  },
                  'login-plus':{
-                     url: 'https://github.com/codenautas/login-plus/milestones'
+                     url: 'https://github.com/codenautas/login-plus/milestones', state:'closed'
                  },
                  'backend-plus':{
-                     url: 'https://github.com/codenautas/backend-plus/milestones'
+                     url: 'https://github.com/codenautas/backend-plus/milestones', state:'closed'
                  },
                  'dialog-promise':{
-                     url: 'https://github.com/codenautas/dialog-promise/milestones'
+                     url: 'https://github.com/codenautas/dialog-promise/milestones', state:'closed'
                  },
                  'milestones':{
-                     url: 'https://github.com/codenautas/milestones/milestones'
+                     url: 'https://github.com/codenautas/milestones/milestones', state:'open'
                  },
              }},
             {name:'Buena',
              projects:{
                  'backend-plus':{
-                     url: 'https://github.com/codenautas/backend-plus/milestones'
+                     url: 'https://github.com/codenautas/backend-plus/milestones', state:'open'
                  }
              }},
             {name:'Bueno',
              projects:{
                  'mini-tools':{
-                     url: 'https://github.com/codenautas/mini-tools/milestones'
+                     url: 'https://github.com/codenautas/mini-tools/milestones', state:'open'
                  },
                  'login-plus':{
-                     url: 'https://github.com/codenautas/login-plus/milestones'
+                     url: 'https://github.com/codenautas/login-plus/milestones', state:'open'
                  },
                  'dialog-promise':{
-                     url: 'https://github.com/codenautas/dialog-promise/milestones'
+                     url: 'https://github.com/codenautas/dialog-promise/milestones', state:'open'
                  },
              }},
             {name:'Completo',
              projects:{
                  'txt-to-sql':{
-                     url: 'https://github.com/codenautas/txt-to-sql/milestones'
+                     url: 'https://github.com/codenautas/txt-to-sql/milestones', state:'open'
                  }
              }},
             {name:'Común',
              projects:{
                  'backend-plus':{
-                     url: 'https://github.com/codenautas/backend-plus/milestones'
+                     url: 'https://github.com/codenautas/backend-plus/milestones', state:'open'
                  },
                  'dialog-promise':{
-                     url: 'https://github.com/codenautas/dialog-promise/milestones'
+                     url: 'https://github.com/codenautas/dialog-promise/milestones', state:'open'
                  },
              }},
             {name:'Lanzamiento',
              projects:{
                  'login-plus':{
-                     url: 'https://github.com/codenautas/login-plus/milestones'
+                     url: 'https://github.com/codenautas/login-plus/milestones', state:'open'
                  },
                  'backend-plus':{
-                     url: 'https://github.com/codenautas/backend-plus/milestones'
+                     url: 'https://github.com/codenautas/backend-plus/milestones', state:'open'
                  },
              }},
             {name:'Versión 3 pasos',
              projects:{
                  'txt-to-sql':{
-                     url: 'https://github.com/codenautas/txt-to-sql/milestones'
+                     url: 'https://github.com/codenautas/txt-to-sql/milestones', state:'closed'
                  }
              }},
             {name:'Versión inicial',
              projects:{
                  'txt-to-sql':{
-                     url: 'https://github.com/codenautas/txt-to-sql/milestones'
+                     url: 'https://github.com/codenautas/txt-to-sql/milestones', state:'closed'
                  }
              }},
         ].forEach(function(milestone) {
