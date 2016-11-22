@@ -3,13 +3,23 @@
 var milestones = {};
 
 if (typeof localStorage === "undefined" || localStorage === null) {
-  milestones.testDir = require('../util/test-dir.js').getDir('milestones-storage');
-  //var LocalStorage = require('node-localstorage').LocalStorage;
-  // var localStorage = new LocalStorage(milestones.testDir);
-  var Path = require('path');
-  var Storage = require('dom-storage');
-  var localStorage = new Storage(Path.normalize(milestones.testDir+'/db.json'), { strict: true, ws: '  ' });
-  milestones.storage = localStorage;
+    milestones.testDir = require('../util/test-dir.js').getDir('milestones-storage');
+    //var LocalStorage = require('node-localstorage').LocalStorage;
+    // var localStorage = new LocalStorage(milestones.testDir);
+    // var Path = require('path');
+    // var Storage = require('dom-storage');
+    // var localStorage = new Storage(Path.normalize(milestones.testDir+'/db.json'), { strict: true, ws: '  ' });
+    var storage = require('node-persist');
+    var localStorage = {};
+    milestones.storageInit = function() {
+        console.log("storageInit");
+        storage.initSync({dir:milestones.testDir});
+        localStorage.getItem = storage.getItemSync;
+        localStorage.setItem = storage.setItemSync;
+        localStorage.removeItem = storage.removeItemSync;
+        localStorage.clear = storage.clearSync;
+    }
+    milestones.storage = localStorage;
 }
 
 if(typeof window === 'undefined') {
@@ -61,7 +71,6 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                 if(projects.length /* && false */){
                     return milestones.fetchAll(output, organization, page+1);
                 }
-                //console.log("output", output);
                 return output;
             });
         }
@@ -80,6 +89,12 @@ milestones.addUrl = function addUrl(url, headers, data) {
     var limit = headers.get('Status').match(/403/);
     var limitReached = limit && limit.length>0;
     if(! limitReached) {
+        // console.log("addUrl", url, {
+                // etag:headers.get('ETag'),
+                // lastModified:headers.get('Last-Modified'),
+                // remainingRequests:headers.get('X-RateLimit-Remaining'),
+                // limitResetTime:headers.get('X-RateLimit-Reset')
+            // });
         localStorage.setItem(
             url,
             JSON.stringify({

@@ -38,6 +38,8 @@ before(function(done){
         mockUrls = json;
         //console.log("mockUrls", mockUrls)
     }).then(function() {
+        return milestones.storageInit();
+    }).then(function() {
         done();
     }).catch(function(err){
         console.log(err);
@@ -71,7 +73,7 @@ describe('milestones', function(){
         var salida={};
         sinon.stub(milestones, "fetchFun", fetchMock);
         milestones.fetchAll(salida, org).then(function(salida) {
-            console.log("milestones.urls()", milestones.urls())
+            //console.log("milestones.urls()", milestones.urls())
             expect(milestones.urls().length).to.eql(Object.keys(mockUrls).length);
             expect(Object.keys(salida).length).to.eql(8);
             if(salida.rateLimitReset) {
