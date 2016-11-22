@@ -52,22 +52,47 @@ function fetchAllMock(url, opts) {
 
 describe('milestones', function(){
     describe('mocked urls', function(){
+        var salida={};
+        // atencion: para correr los siguientes nunca saltear este
         it('fetch all', function(done){
-            var salida={};
             sinon.stub(milestones, "fetchFun", fetchAllMock);
             milestones.fetchAll(salida, org).then(function(salida) {
                 //console.log("milestones.urls()", milestones.urls())
                 expect(milestones.urls().length).to.eql(Object.keys(mockUrls).length);
                 expect(Object.keys(salida).length).to.eql(8);
                 expect(salida.rateLimitReset).to.be(undefined);
-                if(salida.rateLimitReset) {
-                    console.log('Request avalability ['+salida.rateLimitReset+']');
-                }
-                milestones.fetchFun.restore();
+                               milestones.fetchFun.restore();
+                // Object.keys(salida).forEach(function(ms) {
+                    // console.log("ms", ms)
+                    // Object.keys(salida[ms].projects).forEach(function(project) {
+                        // console.log("  ", project)
+                    // });
+                // });
                 done();
             }).catch(function(err) {
                 done(err);
             });
+        });
+        [
+            {skip:true, name:'Aceptable', projects:['milestones']},
+            {skip:true, name:'Buena'},
+            {skip:true, name:'Bueno'},
+            {skip:true, name:'Completo'},
+            {name:'Común', projects:['backend-plus', 'dialog-promise']},
+            {skip:true, name:'Lanzamiento'},
+            {skip:true, name:'Versión 3 pasos'},
+            {skip:true, name:'Versión inicial'},
+        ].forEach(function(milestone) {
+            if(milestone.skip) {
+                it.skip(milestone.name);
+            } else {
+                it(milestone.name, function(done) {
+                    //console.log("salida", salida)
+                    var ms = salida[milestone.name];
+                    expect(Object.keys(ms.projects)).to.eql(milestone.projects)
+                    done();
+                });
+            }
         });
     });
     describe.skip('real', function() {
