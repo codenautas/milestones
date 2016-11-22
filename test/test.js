@@ -64,32 +64,54 @@ describe('milestones', function(){
                 // Object.keys(salida).forEach(function(ms) {
                     // console.log(ms); Object.keys(salida[ms].projects).forEach(function(project) { console.log("  ", project); });
                 // });
+                //console.log(Object.keys(salida.projects).length)
                 milestones.fetchFun.restore();
                 done();
             }).catch(function(err) {
                 done(err);
             });
         });
-        [
-            {name:'Aceptable', projects:['mini-tools','login-plus','backend-plus','dialog-promise','milestones']},
-            {name:'Buena', projects:['backend-plus']},
-            {name:'Bueno', projects:['mini-tools','login-plus','dialog-promise']},
-            {name:'Completo', projects:['txt-to-sql']},
-            {name:'Común', projects:['backend-plus', 'dialog-promise']},
-            {name:'Lanzamiento', projects:['login-plus','backend-plus']},
-            {name:'Versión 3 pasos', projects:['txt-to-sql']},
-            {name:'Versión inicial', projects:['txt-to-sql']},
-        ].forEach(function(milestone) {
-            if(milestone.skip) {
-                it.skip(milestone.name);
-            } else {
-                it(milestone.name, function(done) {
-                    //console.log("salida", salida)
-                    var ms = salida[milestone.name];
-                    expect(Object.keys(ms.projects)).to.eql(milestone.projects)
-                    done();
-                });
-            }
+        describe('data', function() {
+            [
+                {name:'Aceptable', projects:['mini-tools','login-plus','backend-plus','dialog-promise','milestones']},
+                {name:'Buena', projects:['backend-plus']},
+                {name:'Bueno', projects:['mini-tools','login-plus','dialog-promise']},
+                {name:'Completo', projects:['txt-to-sql']},
+                {name:'Común', projects:['backend-plus', 'dialog-promise']},
+                {name:'Lanzamiento', projects:['login-plus','backend-plus']},
+                {name:'Versión 3 pasos', projects:['txt-to-sql']},
+                {name:'Versión inicial', projects:['txt-to-sql']},
+            ].forEach(function(milestone) {
+                if(milestone.skip) {
+                    it.skip(milestone.name);
+                } else {
+                    it(milestone.name, function(done) {
+                        //console.log("salida", salida)
+                        var ms = salida[milestone.name];
+                        expect(Object.keys(ms.projects)).to.eql(milestone.projects)
+                        done();
+                    });
+                }
+            });
+        });
+        describe('projects', function() {
+            [
+                {name:'mini-tools', data:{}},
+                {name:'login-plus', data:{}},
+                {name:'backend-plus', data:{}},
+                {name:'dialog-promise', data:{}},
+                {name:'milestones', data:{}},
+                {name:'txt-to-sql', data:{}},
+            ].forEach(function(project) {
+                if(project.skip) {
+                    it.skip(project.name);
+                } else {
+                    it(project.name, function(done) {
+                        expect(salida.projects[project.name]).to.eql(project.data)
+                        done();
+                    });
+                }
+            });
         });
     });
     describe.skip('real', function() {
