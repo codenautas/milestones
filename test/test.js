@@ -59,7 +59,7 @@ describe('milestones', function(){
             milestones.fetchAll(salida, org).then(function(salida) {
                 //console.log("milestones.urls()", milestones.urls())
                 expect(milestones.urls().length).to.eql(Object.keys(mockUrls).length);
-                expect(Object.keys(salida).length).to.eql(8+1); // milestone keys + salida.projects 
+                expect(Object.keys(salida).length).to.eql(8);
                 expect(salida.rateLimitReset).to.be(undefined);
                 // Object.keys(salida).forEach(function(ms) {
                     // console.log(ms); Object.keys(salida[ms].projects).forEach(function(project) { console.log("  ", project); });
@@ -71,71 +71,44 @@ describe('milestones', function(){
                 done(err);
             });
         });
-        describe('data', function() {
-            [
-                {name:'Aceptable', projects:['mini-tools','login-plus','backend-plus','dialog-promise','milestones']},
-                {name:'Buena', projects:['backend-plus']},
-                {name:'Bueno', projects:['mini-tools','login-plus','dialog-promise']},
-                {name:'Completo', projects:['txt-to-sql']},
-                {name:'Común', projects:['backend-plus', 'dialog-promise']},
-                {name:'Lanzamiento', projects:['login-plus','backend-plus']},
-                {name:'Versión 3 pasos', projects:['txt-to-sql']},
-                {name:'Versión inicial', projects:['txt-to-sql']},
-            ].forEach(function(milestone) {
-                if(milestone.skip) {
-                    it.skip(milestone.name);
-                } else {
-                    it(milestone.name, function(done) {
-                        //console.log("salida", salida)
-                        var ms = salida[milestone.name];
-                        expect(Object.keys(ms.projects)).to.eql(milestone.projects)
-                        done();
-                    });
-                }
-            });
-        });
-        describe('projects', function() {
-            [
-                {name:'mini-tools',
-                      data:{
-                          url: 'https://github.com/codenautas/mini-tools/milestones'
-                      }
-                },
-                {name:'login-plus',
-                      data:{
-                          url: 'https://github.com/codenautas/login-plus/milestones'
-                      }
-                },
-                {name:'backend-plus',
-                      data:{
-                          url: 'https://github.com/codenautas/backend-plus/milestones'
-                      }
-                },
-                {name:'dialog-promise',
-                      data:{
-                          url: 'https://github.com/codenautas/dialog-promise/milestones'
-                      }
-                },
-                {name:'milestones',
-                      data:{
-                          url: 'https://github.com/codenautas/milestones/milestones'
-                      }
-                },
-                {name:'txt-to-sql',
-                      data:{
-                          url: 'https://github.com/codenautas/txt-to-sql/milestones'
-                      }
-                },
-            ].forEach(function(project) {
-                if(project.skip) {
-                    it.skip(project.name);
-                } else {
-                    it(project.name, function(done) {
-                        expect(salida.projects[project.name]).to.eql(project.data)
-                        done();
-                    });
-                }
-            });
+        [
+            {name:'Aceptable',
+             projects:{
+                 'mini-tools':{
+                     url: 'https://github.com/codenautas/mini-tools/milestones'
+                 },
+                 'login-plus':{
+                     url: 'https://github.com/codenautas/login-plus/milestones'
+                 },
+                 'backend-plus':{
+                     url: 'https://github.com/codenautas/backend-plus/milestones'
+                 },
+                 'dialog-promise':{
+                     url: 'https://github.com/codenautas/dialog-promise/milestones'
+                 },
+                 'milestones':{
+                     url: 'https://github.com/codenautas/milestones/milestones'
+                 },
+            }},
+            {skip:true, name:'Aceptable', projects:['mini-tools','login-plus','backend-plus','dialog-promise','milestones']},
+            {skip:true, name:'Buena', projects:['backend-plus']},
+            {skip:true, name:'Bueno', projects:['mini-tools','login-plus','dialog-promise']},
+            {skip:true, name:'Completo', projects:['txt-to-sql']},
+            {skip:true, name:'Común', projects:['backend-plus', 'dialog-promise']},
+            {skip:true, name:'Lanzamiento', projects:['login-plus','backend-plus']},
+            {skip:true, name:'Versión 3 pasos', projects:['txt-to-sql']},
+            {skip:true, name:'Versión inicial', projects:['txt-to-sql']},
+        ].forEach(function(milestone) {
+            if(milestone.skip) {
+                it.skip(milestone.name);
+            } else {
+                it(milestone.name, function(done) {
+                    //console.log("salida", salida)
+                    var ms = salida[milestone.name];
+                    expect(ms.projects).to.eql(milestone.projects)
+                    done();
+                });
+            }
         });
     });
     describe.skip('real', function() {

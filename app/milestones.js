@@ -62,14 +62,12 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                         } else {
                             mstones.forEach(function(milestone){
                                 milestones.add(milestone.title, organization, project.name, milestone);
-                                output.projects = output.projects || {};
-                                if(! (project.name in output.projects)) {
-                                    output.projects[project.name] = {
-                                        url: 'https://github.com/'+organization+'/'+project.name+'/milestones'
-                                    }; //milestone;
-                                }
                                 output[milestone.title] = output[milestone.title] || { projects: {} };
-                                output[milestone.title].projects[project.name] = output.projects[project.name];
+                                //output[milestone.title].projects[project.name] = milestone;
+                                output[milestone.title].projects[project.name] = {
+                                    url: 'https://github.com/'+organization+'/'+project.name+'/milestones'
+                                };
+                                //console.log("state", milestone.state, milestone.title, project.name)
                             });
                         }
                     });
