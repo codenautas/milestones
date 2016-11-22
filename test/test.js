@@ -201,7 +201,6 @@ describe('milestones', function(){
             this.timeout(15000);
             var salida={};
             milestones.fetchAll(salida, org).then(function(salida) {
-                //console.log("milestones.urls()", milestones.urls())
                 if(salida.rateLimitReset) {
                     console.log('Request avalability ['+salida.rateLimitReset+']');
                 }
