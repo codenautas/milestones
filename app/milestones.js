@@ -20,7 +20,7 @@ milestones.fetchFun = fetch;
 
 function finishRequest(out, organization, headers) {
     out = milestones.getOrg(organization) || {};
-    out.rateLimitReset = new Date(headers['x-ratelimit-reset'] * 1000);
+    out.rateLimitReset = new Date(headers.get('X-RateLimit-Reset') * 1000);
     return out;
 }
 
@@ -29,7 +29,7 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
     var baseUrl = 'https://api.github.com/orgs/'+organization+'/repos?page='+page;
     var headers;
     return milestones.fetchFun(baseUrl).then(function(response){
-        headers = response.headers.raw();
+        headers = response.headers;
         return response.json();
     }).then(function(rjson) {
         if(! milestones.addUrl(baseUrl, headers, rjson)) {
@@ -44,7 +44,7 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                 projects.map(function(project){
                     var url = 'https://api.github.com/repos/'+organization+'/'+project.name+'/milestones?state=all';
                     return milestones.fetchFun(url).then(function(response){
-                        headers = response.headers.raw();
+                        headers = response.headers;
                         return response.json();
                     }).then(function(mstones){
                         if(! milestones.addUrl(url, headers, mstones)) {
@@ -77,10 +77,18 @@ function storeKeyIfNotExists(arrayName, key) {
 }
 
 milestones.addUrl = function addUrl(url, headers, data) {
-    var limit = headers.status[0].match(/403/);
+    var limit = headers.get('Status').match(/403/);
     var limitReached = limit && limit.length>0;
     if(! limitReached) {
-        localStorage.setItem(url, JSON.stringify({headers:headers, response:data}));
+        localStorage.setItem(
+            url,
+            JSON.stringify({
+                etag:headers.get('ETag'),
+                lastModified:headers.get('Last-Modified'),
+                remainingRequests:headers.get('X-RateLimit-Remaining'),
+                limitResetTime:headers.get('X-RateLimit-Reset')
+            })
+        );
         storeKeyIfNotExists('urls', url);
     }
     return ! limitReached;

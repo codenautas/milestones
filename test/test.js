@@ -50,7 +50,12 @@ function fetchMock(url, opts) {
     return Promise.resolve().then(function() {
         var u = mockUrls[url];
         var r = {};
-        r.headers = { raw:function() { return u.headers; } };
+        r.headers = {
+            get:function(name) {
+                var list = u.headers[name.toLowerCase()];
+                return list ? list[0] : null;
+            }
+        };
         r.json = function() {
             return Promise.resolve().then(function() {
                 return u.response;
