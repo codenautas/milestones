@@ -59,7 +59,7 @@ describe('milestones', function(){
             milestones.fetchAll(salida, org).then(function(salida) {
                 //console.log("milestones.urls()", milestones.urls())
                 expect(milestones.urls().length).to.eql(Object.keys(mockUrls).length);
-                expect(Object.keys(salida).length).to.eql(8);
+                expect(Object.keys(salida).length).to.eql(8+1); // milestone keys + salida.projects 
                 expect(salida.rateLimitReset).to.be(undefined);
                 // Object.keys(salida).forEach(function(ms) {
                     // console.log(ms); Object.keys(salida[ms].projects).forEach(function(project) { console.log("  ", project); });

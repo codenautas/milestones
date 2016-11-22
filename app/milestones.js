@@ -62,12 +62,13 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                         } else {
                             mstones.forEach(function(milestone){
                                 milestones.add(milestone.title, organization, project.name, milestone);
+                                output.projects = output.projects || {};
+                                output.projects[project.name] = milestone;
                                 //console.log(milestone.title, output[milestone.title]?"  ":" NUEVO", project.name)
                                 output[milestone.title] = output[milestone.title] || { projects: {} };
-                                output[milestone.title].projects[project.name] = milestone;
-                                output[milestone.title].projects[project.name].info = {
-                                    
-                                };
+                                //output[milestone.title].projects[project.name] = milestone;
+                                output[milestone.title].projects[project.name] = output.projects[project.name];
+                                //output[milestone.title].projects[project.name].info = { };
                             });
                         }
                     });
