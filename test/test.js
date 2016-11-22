@@ -5,19 +5,6 @@ var milestones = require('../app/milestones.js');
 var fs = require('fs-promise');
 var sinon = require('sinon');
 
-function genMockUrls(milestones) {
-    var mockedGitHub = {};
-    var urls = milestones.urls();
-    urls.forEach(function(url, index) {
-        var u = milestones.getUrl(url);
-        if(u) { mockedGitHub[url] = u; }
-        //mockedGitHub[url] = {headers:u.headers, response:u.response};
-    });
-    return fs.writeJson('mockUrls.json', mockedGitHub).then(function() {
-        console.log("generated.")
-    });
-}
-
 var mockUrls;
 
 before(function(done){
@@ -35,8 +22,6 @@ before(function(done){
     }).then(function() {
         // node-persist requiere esto!
         return milestones.storageInit();
-    // }).then(function() {
-        // return genMockUrls(milestones);
     }).then(function() {
         done();
     }).catch(function(err){
@@ -46,7 +31,7 @@ before(function(done){
 
 var org = 'codenautas';
 
-function fetchMock(url, opts) {
+function fetchAllMock(url, opts) {
     return Promise.resolve().then(function() {
         var u = mockUrls[url];
         var r = {};
@@ -69,7 +54,7 @@ describe('milestones', function(){
     describe('mocked urls', function(){
         it('fetch all', function(done){
             var salida={};
-            sinon.stub(milestones, "fetchFun", fetchMock);
+            sinon.stub(milestones, "fetchFun", fetchAllMock);
             milestones.fetchAll(salida, org).then(function(salida) {
                 //console.log("milestones.urls()", milestones.urls())
                 expect(milestones.urls().length).to.eql(Object.keys(mockUrls).length);
