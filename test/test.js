@@ -71,93 +71,96 @@ describe('milestones', function(){
                 done(err);
             });
         });
+        function setDFU(updated_at) {
+            return milestones.milisecondsToDays(Date.now()-new Date(updated_at).getTime());
+        }
         [
             {name:'Aceptable',
              projects:{
                  'backend-plus':{
                      url: 'https://github.com/codenautas/backend-plus/milestones',
-                     state:'closed', date:'2016-10-25T15:08:01Z'
+                     state:'closed', date:'2016-10-25T15:08:01Z', daysFromUpdate:setDFU('2016-10-25T15:08:01Z')
                  },
                  'dialog-promise':{
                      url: 'https://github.com/codenautas/dialog-promise/milestones',
-                     state:'closed', date:'2016-10-25T23:19:35Z'
+                     state:'closed', date:'2016-10-25T23:19:35Z', daysFromUpdate:setDFU('2016-10-25T23:19:35Z')
                  },
                  'login-plus':{
                      url: 'https://github.com/codenautas/login-plus/milestones',
-                     state:'closed', date:'2016-11-16T17:05:09Z'
+                     state:'closed', date:'2016-11-16T17:05:09Z', daysFromUpdate:setDFU('2016-11-16T17:05:09Z')
                  },
                  'milestones':{
                      url: 'https://github.com/codenautas/milestones/milestones',
-                     state:'open', date:'2016-12-21T00:00:00Z'
+                     state:'open', date:'2016-12-21T00:00:00Z', daysFromUpdate:setDFU('2016-11-12T17:00:18Z')
                  },
                  'mini-tools':{
                      url: 'https://github.com/codenautas/mini-tools/milestones',
-                     state:'open', date:'2016-10-17T00:00:00Z'
+                     state:'open', date:'2016-10-17T00:00:00Z', daysFromUpdate:setDFU('2016-10-07T17:10:45Z')
                  },
              }},
             {name:'Buena',
              projects:{
                  'backend-plus':{
                      url: 'https://github.com/codenautas/backend-plus/milestones',
-                     state:'open', date:'2016-12-18T00:00:00Z'
+                     state:'open', date:'2016-12-18T00:00:00Z', daysFromUpdate:setDFU('2016-11-21T01:38:34Z')
                  }
              }},
             {name:'Bueno',
              projects:{
                  'dialog-promise':{
                      url: 'https://github.com/codenautas/dialog-promise/milestones',
-                     state:'open', date:'2017-04-15T00:00:00Z'
+                     state:'open', date:'2017-04-15T00:00:00Z', daysFromUpdate:setDFU('2016-10-29T14:03:32Z')
                  },
                  'login-plus':{
                      url: 'https://github.com/codenautas/login-plus/milestones',
-                     state:'open', date:'2016-12-18T00:00:00Z'
+                     state:'open', date:'2016-12-18T00:00:00Z', daysFromUpdate:setDFU('2016-11-16T20:32:10Z')
                  },
                  'mini-tools':{
                      url: 'https://github.com/codenautas/mini-tools/milestones',
-                     state:'open', date:'2016-12-21T00:00:00Z'
+                     state:'open', date:'2016-12-21T00:00:00Z', daysFromUpdate:setDFU('2016-10-07T17:11:06Z')
                  },
              }},
             {name:'Completo',
              projects:{
                  'txt-to-sql':{
                      url: 'https://github.com/codenautas/txt-to-sql/milestones',
-                     state:'open', date:'2017-03-31T00:00:00Z'
+                     state:'open', date:'2017-03-31T00:00:00Z', daysFromUpdate:setDFU('2016-11-09T14:45:57Z')
                  }
              }},
             {name:'Común',
              projects:{
                  'backend-plus':{
                      url: 'https://github.com/codenautas/backend-plus/milestones',
-                     state:'open', date:'2017-04-20T00:00:00Z'
+                     state:'open', date:'2017-04-20T00:00:00Z', daysFromUpdate:setDFU('2016-11-09T17:24:16Z')
                  },
                  'dialog-promise':{
                      url: 'https://github.com/codenautas/dialog-promise/milestones',
-                     state:'open', date:'2017-04-30T00:00:00Z'
+                     state:'open', date:'2017-04-30T00:00:00Z', daysFromUpdate:setDFU('2016-10-29T13:23:05Z')
                  },
              }},
             {name:'Lanzamiento',
              projects:{
                  'backend-plus':{
                      url: 'https://github.com/codenautas/backend-plus/milestones',
-                     state:'open', date:'2017-07-31T00:00:00Z'
+                     state:'open', date:'2017-07-31T00:00:00Z', daysFromUpdate:setDFU('2016-09-09T18:02:35Z')
                  },
                 'login-plus':{
                      url: 'https://github.com/codenautas/login-plus/milestones',
-                     state:'open', date:'2017-09-13T00:00:00Z'
+                     state:'open', date:'2017-09-13T00:00:00Z', daysFromUpdate:setDFU('2016-09-09T18:24:22Z')
                  },
              }},
             {name:'Versión 3 pasos',
              projects:{
                  'txt-to-sql':{
                      url: 'https://github.com/codenautas/txt-to-sql/milestones',
-                     state:'closed', date:'2016-11-09T11:42:12Z'
+                     state:'closed', date:'2016-11-09T11:42:12Z', daysFromUpdate:setDFU('2016-11-09T11:42:12Z')
                  }
              }},
             {name:'Versión inicial',
              projects:{
                  'txt-to-sql':{
                      url: 'https://github.com/codenautas/txt-to-sql/milestones',
-                     state:'closed', date:'2016-10-05T18:43:19Z'
+                     state:'closed', date:'2016-10-05T18:43:19Z', daysFromUpdate:setDFU('2016-10-05T18:43:19Z')
                  }
              }},
         ].forEach(function(milestone) {

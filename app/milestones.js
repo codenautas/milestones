@@ -34,6 +34,10 @@ function finishRequest(out, organization, headers) {
     return out;
 }
 
+milestones.milisecondsToDays = function milisecondsToDays(miliseconds) {
+    return parseInt(miliseconds / (1000*60*60*24));
+}
+
 milestones.fetchAll = function fetchAll(output, organization, page) {
     var page=page||1;
     var baseUrl = 'https://api.github.com/orgs/'+organization+'/repos?page='+page;
@@ -67,7 +71,8 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                                 output[milestone.title].projects[project.name] = {
                                     url: 'https://github.com/'+organization+'/'+project.name+'/milestones',
                                     state: milestone.state,
-                                    date: milestone.closed_at || milestone.due_on // closed_at es null si está abierto
+                                    date: milestone.closed_at || milestone.due_on, // closed_at es null si está abierto
+                                    daysFromUpdate: milestones.milisecondsToDays(Date.now()-new Date(milestone.updated_at).getTime())
                                 };
                             });
                         }
