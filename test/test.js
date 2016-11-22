@@ -197,7 +197,7 @@ describe('milestones', function(){
             }
         });
     });
-    describe('real', function() {
+    describe.skip('real', function() {
         before(function(done){
             this.timeout(5000);
             var myTestDir = 'real';

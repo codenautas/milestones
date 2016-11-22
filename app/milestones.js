@@ -56,9 +56,8 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                         headers = response.headers;
                         return response.json();
                     }).then(function(mstones){
-                        //console.log("mstones", mstones)
                         if(! milestones.addUrl(url, headers, mstones)) {
-                            finishRequest(output, organization, headers);
+                            return finishRequest(output, organization, headers);
                         } else {
                             mstones.forEach(function(milestone){
                                 milestones.add(milestone.title, organization, project.name, milestone);
@@ -99,8 +98,8 @@ function storeKeyIfNotExists(arrayName, key) {
 }
 
 milestones.addUrl = function addUrl(url, headers, data) {
-    var limit = headers.get('Status').match(/403/);
-    var limitReached = limit && limit.length>0;
+    var status = headers.get('Status').match(/403/);
+    var limitReached = status && status.length>0;
     if(! limitReached) {
         localStorage.setItem(
             url,
@@ -116,6 +115,36 @@ milestones.addUrl = function addUrl(url, headers, data) {
     return localStorage.getItem(url);
 };
 
+milestones.fetchUrl = function fetchUrl(url) {
+    var status = headers.get('Status').match(/403/);
+    var limitReached = status && status.length>0;
+    var cachedUrl = localStorage.getUrl(url);
+    return Promise.resolve().then(function() {
+        if(cachedUrl) {
+            var headers = cachedUrl.etag ? {'If-None-Match':cachedUrl.etag } : {'If-Modified-Since':cachedUrl.lastModified };
+            return milestones.fetchFun(url,{headers:headers});
+        }
+    }).then(function(response) {
+        status = headers.get('Status').match(/304/);
+        var modified = ! status || status.length===0;
+        if(modified && ! limitReached) {
+            localStorage.setItem(
+                url,
+                JSON.stringify({
+                    etag:headers.get('ETag'),
+                    lastModified:headers.get('Last-Modified'),
+                    remainingRequests:headers.get('X-RateLimit-Remaining'),
+                    limitResetTime:headers.get('X-RateLimit-Reset')
+                })
+            );
+            storeKeyIfNotExists('urls', url);
+            return localStorage.getItem(url);
+        }
+        // may be null
+        return cachedUrl;
+    });
+}
+
 milestones.urls = function urls() { return JSON.parse(localStorage.getItem('urls') || '[]'); }
 milestones.getUrl = function getUrl(url) { return JSON.parse(localStorage.getItem(url)); };
 
@@ -129,9 +158,6 @@ milestones.add = function add(title, organization, project, milestoneData) {
     return org.milestones[title];
 }
 milestones.orgs = function orgs() { return JSON.parse(localStorage.getItem('orgs') || '[]'); }
-
-milestones.getOrg = function getOrg(organization) {
-    return JSON.parse(localStorage.getItem(organization));
-};
+milestones.getOrg = function getOrg(organization) {  return JSON.parse(localStorage.getItem(organization)); };
 
 module.exports = milestones;
