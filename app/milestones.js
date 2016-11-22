@@ -3,11 +3,11 @@
 var milestones = {};
 
 if (typeof localStorage === "undefined" || localStorage === null) {
-    milestones.testDir = require('../util/test-dir.js').getDir('milestones-storage');
+    milestones.testDir = require('path').normalize(require('../util/test-dir.js').getDir('milestones-storage')+'/'); 
     var storage = require('node-persist');
     var localStorage = {};
-    milestones.storageInit = function() {
-        storage.initSync({dir:milestones.testDir});
+    milestones.storageInit = function(storageDir) {    
+        storage.initSync({dir:milestones.testDir+storageDir});
         // getItemSync() devuelve undefined si key no está!
         localStorage.getItem = function(key) { return storage.getItemSync(key)||null; };
         localStorage.setItem = storage.setItemSync;

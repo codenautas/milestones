@@ -7,28 +7,6 @@ var sinon = require('sinon');
 
 var mockUrls;
 
-before(function(done){
-    this.timeout(5000);
-    Promise.resolve().then(function() {
-        return fs.exists(milestones.testDir);
-    }).then(function(existe) {
-        if(existe) { return fs.remove(milestones.testDir);  }
-    }).then(function() {
-        return fs.mkdirs(milestones.testDir);
-    }).then(function() {
-        return fs.readJson(__dirname+'/mockUrls.json');
-    }).then(function(json) {
-        mockUrls = json;
-    }).then(function() {
-        // node-persist requiere esto!
-        return milestones.storageInit();
-    }).then(function() {
-        done();
-    }).catch(function(err){
-        console.log(err);
-    });
-});
-
 var org = 'codenautas';
 
 function fetchAllMock(url, opts) {
@@ -50,8 +28,34 @@ function fetchAllMock(url, opts) {
     });
 }
 
+function initializeTestDir(tdPath) {
+    return fs.exists(tdPath).then(function(existe) {
+        if(existe) { return fs.remove(tdPath);  }
+    }).then(function() {
+        return fs.mkdirs(tdPath);
+    });
+}
+
 describe('milestones', function(){
     describe('mocked urls', function(){
+        before(function(done){
+            this.timeout(5000);
+            var myTestDir = 'mocked';
+            Promise.resolve().then(function() {
+                return initializeTestDir(milestones.testDir+myTestDir);
+            }).then(function() {
+                return fs.readJson(__dirname+'/mockUrls.json');
+            }).then(function(json) {
+                mockUrls = json;
+            }).then(function() {
+                // node-persist requiere esto!
+                return milestones.storageInit(myTestDir);
+            }).then(function() {
+                done();
+            }).catch(function(err){
+                console.log(err);
+            });
+        });
         var salida={};
         // ATENCION: para correr los siguientes nunca saltear este
         it('fetch all', function(done){
@@ -193,11 +197,22 @@ describe('milestones', function(){
             }
         });
     });
-    describe.skip('real', function() {
-        before(function() {
-            milestones.storage.clear();
+    describe('real', function() {
+        before(function(done){
+            this.timeout(5000);
+            var myTestDir = 'real';
+            Promise.resolve().then(function() {
+                return initializeTestDir(milestones.testDir+myTestDir);
+            }).then(function() {
+                // node-persist requiere esto!
+                return milestones.storageInit(myTestDir);
+            }).then(function() {
+                done();
+            }).catch(function(err){
+                console.log(err);
+            });
         });
-        it('???', function(done){
+        it('read only changed requests', function(done){
             this.timeout(15000);
             var salida={};
             milestones.fetchAll(salida, org).then(function(salida) {
