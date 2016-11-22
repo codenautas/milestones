@@ -68,11 +68,19 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                                 milestones.add(milestone.title, organization, project.name, milestone);
                                 output[milestone.title] = output[milestone.title] || { projects: {} };
                                 //output[milestone.title].projects[project.name] = milestone;
+                                var totalIssues = milestone.open_issues + milestone.closed_issues;
+                                var pct = 0;
+                                if(0===milestone.open_issues) {
+                                    pct = 100;
+                                } else if(0!==milestone.closed_issues) {
+                                    pct = Math.round(milestone.open_issues/totalIssues*100);
+                                }
                                 output[milestone.title].projects[project.name] = {
                                     url: 'https://github.com/'+organization+'/'+project.name+'/milestones',
                                     state: milestone.state,
                                     date: milestone.closed_at || milestone.due_on, // closed_at es null si está abierto
-                                    daysFromUpdate: milestones.milisecondsToDays(Date.now()-new Date(milestone.updated_at).getTime())
+                                    daysFromUpdate: milestones.milisecondsToDays(Date.now()-new Date(milestone.updated_at).getTime()),
+                                    pctComplete: pct
                                 };
                             });
                         }
