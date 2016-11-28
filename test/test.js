@@ -1,7 +1,7 @@
 "use strict";
 
 var expect = require('expect.js');
-var milestones = require('../app/milestones.js');
+var milestones = require('../web/milestones.js');
 var fs = require('fs-promise');
 var sinon = require('sinon');
 
