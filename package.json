@@ -2,17 +2,15 @@
   "name": "milestones",
   "version": "0.0.2",
   "description": "github milestones",
-  "main": "milestones.js",
+  "main": "web/milestones.js",
+  "files": ["web"],
   "scripts": {
     "test": "mocha --reporter spec --bail --check-leaks test/",
     "test-nc": "mocha --reporter spec --bail --check-leaks --no-colors test/",
     "test-ci": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter spec --check-leaks test/",
     "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot --check-leaks test/"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/codenautas/milestones.git"
-  },
+  "repository": "codenautas/milestones",
   "author": "",
   "license": "MIT",
   "bugs": {
@@ -27,5 +25,12 @@
     "node-fetch": "~1.6.3",
     "node-persist": "~2.0.7",
     "sinon": "~1.17.6"
+  },
+  "qa-control": {
+    "package-version": "0.3.0",
+    "coverage": 90,
+    "run-in": "server",
+    "stability": "designing",
+    "type": "web"
   }
 }
