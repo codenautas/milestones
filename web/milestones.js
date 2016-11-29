@@ -41,8 +41,8 @@ milestones.fetchAll = function fetchAll(opts) {
     var headers;
     return milestones.fetchUrl(baseUrl).then(function(response){
         headers = response.headers;
-        var projects = response.url.body;
-        if(! projects) {
+        var projects = response.body();
+        if(! projects || response.limitReached) {
             return finishRequest(opts.out, opts.org, headers);
         } else {
             return Promise.all(
@@ -50,12 +50,12 @@ milestones.fetchAll = function fetchAll(opts) {
                     var url = 'https://api.github.com/repos/'+opts.org+'/'+project.name+'/milestones?state=all';
                     return milestones.fetchUrl(url).then(function(response){
                         headers = response.headers;
-                        var mstones = response.url.body;
-                        if(! mstones) {
+                        var mstones = response.body();
+                        if(! mstones || response.limitReached) {
                             return finishRequest(opts.out, opts.org, headers);
                         } else {
                             mstones.forEach(function(milestone){
-                                milestones.add(milestone.title, opts.org, project.name, milestone);
+                                milestones.addOrg(milestone.title, opts.org, project.name, milestone);
                                 opts.out[milestone.title] = opts.out[milestone.title] || { projects: {} };
                                 //opts.out[milestone.title].projects[project.name] = milestone;
                                 var totalIssues = milestone.open_issues + milestone.closed_issues;
@@ -97,48 +97,49 @@ function storeKeyIfNotExists(arrayName, key) {
 function statusIS(headers, status) { return new RegExp(status).test(headers.get('Status')); }
 
 milestones.fetchUrl = function fetchUrl(url) {
-    var cachedUrl = milestones.getUrl(url);
-    var headers;
+    var rv={url:milestones.getUrl(url)};
+    rv.body = function() { return this.url.body || null; }
     return Promise.resolve().then(function() {
         var options = {};
-        if(cachedUrl) {
-            options.headers = cachedUrl.etag ? {'If-None-Match':cachedUrl.etag } : {'If-Modified-Since':cachedUrl.lastModified };
+        if(rv.url) {
+            options.headers = rv.url.etag ? {'If-None-Match':rv.url.etag } : {'If-Modified-Since':rv.url.lastModified };
         }
         //console.log("url", url);
         return milestones.fetchFun(url, options);
     }).then(function(response) {
         //console.log("  response", response);
-        headers = response.headers;
-        if(statusIS(headers, 304)) { return null; }
+        rv.headers = response.headers;
+        rv.unchanged = statusIS(rv.headers, 304);
+        rv.limitReached = statusIS(rv.headers, 403);
+        if(rv.unchanged || rv.limitReached) {
+            console.log("UNCHANGED", url)
+            return null;
+        }
         return response.json();
     }).then(function(json) {
         //console.log("  JSON", json);
-        // content did NOT change AND limit was NOT reached
-        if(! statusIS(headers, 304) && ! statusIS(headers, 403)) {
+        if(json) {
             localStorage.setItem(
                 url,
                 JSON.stringify({
-                    etag:headers.get('ETag'),
-                    lastModified:headers.get('Last-Modified'),
-                    remainingRequests:headers.get('X-RateLimit-Remaining'),
-                    limitResetTime:headers.get('X-RateLimit-Reset'),
+                    etag:rv.headers.get('ETag'),
+                    lastModified:rv.headers.get('Last-Modified'),
+                    remainingRequests:rv.headers.get('X-RateLimit-Remaining'),
+                    limitResetTime:rv.headers.get('X-RateLimit-Reset'),
                     body:json
                 })
             );
             storeKeyIfNotExists('urls', url);
-            cachedUrl = milestones.getUrl(url);
+            rv.url = milestones.getUrl(url);
         }
-        return {
-            url:cachedUrl, // may be null!
-            headers:headers
-        };
+        return rv;
     });
 };
 
 milestones.urls = function urls() { return JSON.parse(localStorage.getItem('urls') || '[]'); };
 milestones.getUrl = function getUrl(url) { return JSON.parse(localStorage.getItem(url)); };
 
-milestones.add = function add(title, organization, project, milestoneData) {
+milestones.addOrg = function addOrg(title, organization, project, milestoneData) {
     var org = JSON.parse(localStorage.getItem(organization) || '{}');
     org.milestones = org.milestones || {};
     org.milestones[title] = org.milestones[title] || {projects: {}};
@@ -148,6 +149,6 @@ milestones.add = function add(title, organization, project, milestoneData) {
     return org.milestones[title];
 };
 milestones.orgs = function orgs() { return JSON.parse(localStorage.getItem('orgs') || '[]'); };
-milestones.getOrg = function getOrg(organization) {  return JSON.parse(localStorage.getItem(organization)); };
+milestones.getOrg = function getOrg(organization) {  return JSON.parse(localStorage.getItem(organization)).milestones; };
 
 module.exports = milestones;

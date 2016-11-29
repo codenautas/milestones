@@ -218,9 +218,11 @@ describe('milestones', function(){
         it('read only changed requests', function(done){
             this.timeout(20000);
             milestones.fetchAll({org:org}).then(function(salida) {
-                console.log('salida', salida)
+                // console.log('salida', JSON.stringify(salida));
+                console.log('salida', Object.keys(salida));
+                //console.log('salida', Object.keys(salida.milestones));
                 if(salida.rateLimitReset) {
-                    console.log('Request avalability ['+salida.rateLimitReset+']');
+                    console.log('Limit reached: request avalability ['+salida.rateLimitReset+']');
                 }
                 done();
             }).catch(function(err) {
