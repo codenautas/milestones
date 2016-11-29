@@ -100,10 +100,12 @@ milestones.fetchUrl = function fetchUrl(url) {
         if(cachedUrl) {
             options.headers = cachedUrl.etag ? {'If-None-Match':cachedUrl.etag } : {'If-Modified-Since':cachedUrl.lastModified };
         }
+        //console.log("url", url);
         return milestones.fetchFun(url, options);
     }).then(function(response) {
-        //console.log("url", url);
+        //console.log("  response", response);
         headers = response.headers;
+        if(statusIS(headers, 304)) { return null; }
         return response.json();
     }).then(function(json) {
         //console.log("  JSON", json);

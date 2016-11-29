@@ -214,7 +214,7 @@ describe('milestones', function(){
             });
         });
         it('read only changed requests', function(done){
-            this.timeout(15000);
+            this.timeout(20000);
             var salida={};
             milestones.fetchAll(salida, org).then(function(salida) {
                 if(salida.rateLimitReset) {
