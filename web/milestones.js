@@ -23,7 +23,7 @@ if(typeof window === 'undefined') {
 
 milestones.fetchFun = function(url, opts) {
     return fetch(url, opts);
-}
+};
 
 function finishRequest(out, organization, headers) {
     out = milestones.getOrg(organization) || {};
@@ -100,7 +100,7 @@ function storeKeyIfNotExists(arrayName, key) {
 
 milestones.fetchUrl = function fetchUrl(url) {
     var rv={url:milestones.getUrl(url)};
-    rv.body = function() { return this.url ? this.url.body : null; }
+    rv.body = function() { return this.url ? this.url.body : null; };
     return Promise.resolve().then(function() {
         var options = {};
         if(rv.url) {
