@@ -37,26 +37,19 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
     page=page||1;
     var baseUrl = 'https://api.github.com/orgs/'+organization+'/repos?page='+page;
     var headers;
-    return milestones.fetchFun(baseUrl).then(function(response){
+    return milestones.fetchUrl(baseUrl).then(function(response){
         headers = response.headers;
-        return response.json();
-    }).then(function(rjson) {
-        if(! milestones.addUrl(baseUrl, headers, rjson)) {
-            return false;
-        }
-        return rjson;
-    }).then(function(projects){
+        var projects = response.url.body;
         if(! projects) {
             return finishRequest(output, organization, headers);
         } else {
             return Promise.all(
                 projects.map(function(project){
                     var url = 'https://api.github.com/repos/'+organization+'/'+project.name+'/milestones?state=all';
-                    return milestones.fetchFun(url).then(function(response){
+                    return milestones.fetchUrl(url).then(function(response){
                         headers = response.headers;
-                        return response.json();
-                    }).then(function(mstones){
-                        if(! milestones.addUrl(url, headers, mstones)) {
+                        var mstones = response.url.body;
+                        if(! mstones) {
                             return finishRequest(output, organization, headers);
                         } else {
                             mstones.forEach(function(milestone){
@@ -97,51 +90,42 @@ function storeKeyIfNotExists(arrayName, key) {
     localStorage.setItem(arrayName, JSON.stringify(arr));
 }
 
-milestones.addUrl = function addUrl(url, headers, data) {
-    var status = headers.get('Status').match(/403/);
-    var limitReached = status && status.length>0;
-    if(! limitReached) {
-        localStorage.setItem(
-            url,
-            JSON.stringify({
-                etag:headers.get('ETag'),
-                lastModified:headers.get('Last-Modified'),
-                remainingRequests:headers.get('X-RateLimit-Remaining'),
-                limitResetTime:headers.get('X-RateLimit-Reset')
-            })
-        );
-        storeKeyIfNotExists('urls', url);   
-    }
-    return localStorage.getItem(url);
-};
+function statusIS(headers, status) { return new RegExp(status).test(headers.get('Status')); }
 
-milestones.fetchUrl = function fetchUrl(url, headers) {
-    var status = headers.get('Status').match(/403/);
-    var limitReached = status && status.length>0;
-    var cachedUrl = localStorage.getUrl(url);
+milestones.fetchUrl = function fetchUrl(url) {
+    var cachedUrl = milestones.getUrl(url);
+    var headers;
     return Promise.resolve().then(function() {
+        var options = {};
         if(cachedUrl) {
-            var headers = cachedUrl.etag ? {'If-None-Match':cachedUrl.etag } : {'If-Modified-Since':cachedUrl.lastModified };
-            return milestones.fetchFun(url,{headers:headers});
+            options.headers = cachedUrl.etag ? {'If-None-Match':cachedUrl.etag } : {'If-Modified-Since':cachedUrl.lastModified };
         }
+        return milestones.fetchFun(url, options);
     }).then(function(response) {
-        status = headers.get('Status').match(/304/);
-        var modified = ! status || status.length===0;
-        if(modified && ! limitReached) {
+        //console.log("url", url);
+        headers = response.headers;
+        return response.json();
+    }).then(function(json) {
+        //console.log("  JSON", json);
+        // content did NOT change AND limit was NOT reached
+        if(! statusIS(headers, 304) && ! statusIS(headers, 403)) {
             localStorage.setItem(
                 url,
                 JSON.stringify({
                     etag:headers.get('ETag'),
                     lastModified:headers.get('Last-Modified'),
                     remainingRequests:headers.get('X-RateLimit-Remaining'),
-                    limitResetTime:headers.get('X-RateLimit-Reset')
+                    limitResetTime:headers.get('X-RateLimit-Reset'),
+                    body:json
                 })
             );
             storeKeyIfNotExists('urls', url);
-            return localStorage.getItem(url);
+            cachedUrl = milestones.getUrl(url);
         }
-        // may be null
-        return cachedUrl;
+        return {
+            url:cachedUrl, // may be null!
+            headers:headers
+        };
     });
 };
 

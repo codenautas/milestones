@@ -75,6 +75,7 @@ describe('milestones', function(){
                 done(err);
             });
         });
+        // set Days From Update
         function setDFU(updated_at) {
             return milestones.milisecondsToDays(Date.now()-new Date(updated_at).getTime());
         }
@@ -221,7 +222,8 @@ describe('milestones', function(){
                 }
                 done();
             }).catch(function(err) {
-                done(err);
+                console.log("err", err, err.stack)
+                done(err.stack);
             });
         });        
     });
