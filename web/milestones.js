@@ -21,7 +21,9 @@ if(typeof window === 'undefined') {
     var fetch = require('node-fetch');
 }
 
-milestones.fetchFun = fetch;
+milestones.fetchFun = function(url, opts) {
+    return fetch(url, opts);
+}
 
 function finishRequest(out, organization, headers) {
     out = milestones.getOrg(organization) || {};
@@ -42,6 +44,8 @@ milestones.fetchAll = function fetchAll(opts) {
     return milestones.fetchUrl(baseUrl).then(function(response){
         headers = response.headers;
         var projects = response.body();
+        //console.log(JSON.stringify(response))
+        //console.log(response.body())
         if(! projects || response.limitReached) {
             return finishRequest(opts.out, opts.org, headers);
         } else {
@@ -94,30 +98,31 @@ function storeKeyIfNotExists(arrayName, key) {
     localStorage.setItem(arrayName, JSON.stringify(arr));
 }
 
-function statusIS(headers, status) { return new RegExp(status).test(headers.get('Status')); }
-
 milestones.fetchUrl = function fetchUrl(url) {
     var rv={url:milestones.getUrl(url)};
-    rv.body = function() { return this.url.body || null; }
+    rv.body = function() { return this.url ? this.url.body : null; }
     return Promise.resolve().then(function() {
         var options = {};
         if(rv.url) {
-            options.headers = rv.url.etag ? {'If-None-Match':rv.url.etag } : {'If-Modified-Since':rv.url.lastModified };
+            var hdrs = new Headers();
+            if(rv.url.etag) {
+                hdrs.append('If-None-Match', rv.url.etag);
+            } else {
+                hdrs.append('If-Modified-Since', rv.url.lastModified);
+            }
+            options.headers = hdrs;
         }
-        //console.log("url", url);
         return milestones.fetchFun(url, options);
     }).then(function(response) {
-        //console.log("  response", response);
+        //console.log("  status", response.status);
         rv.headers = response.headers;
-        rv.unchanged = statusIS(rv.headers, 304);
-        rv.limitReached = statusIS(rv.headers, 403);
+        rv.unchanged = response.status === 304;
+        rv.limitReached = response.status === 403;
         if(rv.unchanged || rv.limitReached) {
-            console.log("UNCHANGED", url)
             return null;
         }
         return response.json();
     }).then(function(json) {
-        //console.log("  JSON", json);
         if(json) {
             localStorage.setItem(
                 url,

@@ -19,6 +19,7 @@ function fetchAllMock(url, opts) {
                 return list ? list[0] : null;
             }
         };
+        r.status = 200;
         r.json = function() {
             return Promise.resolve().then(function() {
                 return u.response;
