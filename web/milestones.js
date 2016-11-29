@@ -13,7 +13,7 @@ if (typeof localStorage === "undefined" || localStorage === null) {
         localStorage.setItem = storage.setItemSync;
         localStorage.removeItem = storage.removeItemSync;
         localStorage.clear = storage.clearSync;
-    }
+    };
     milestones.storage = localStorage;
 }
 
@@ -31,10 +31,10 @@ function finishRequest(out, organization, headers) {
 
 milestones.milisecondsToDays = function milisecondsToDays(miliseconds) {
     return parseInt(miliseconds / (1000*60*60*24));
-}
+};
 
 milestones.fetchAll = function fetchAll(output, organization, page) {
-    var page=page||1;
+    page=page||1;
     var baseUrl = 'https://api.github.com/orgs/'+organization+'/repos?page='+page;
     var headers;
     return milestones.fetchFun(baseUrl).then(function(response){
@@ -89,7 +89,7 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
             });
         }
     });
-}
+};
 
 function storeKeyIfNotExists(arrayName, key) {
     var arr = JSON.parse(localStorage.getItem(arrayName) || '[]');
@@ -115,7 +115,7 @@ milestones.addUrl = function addUrl(url, headers, data) {
     return localStorage.getItem(url);
 };
 
-milestones.fetchUrl = function fetchUrl(url) {
+milestones.fetchUrl = function fetchUrl(url, headers) {
     var status = headers.get('Status').match(/403/);
     var limitReached = status && status.length>0;
     var cachedUrl = localStorage.getUrl(url);
@@ -143,9 +143,9 @@ milestones.fetchUrl = function fetchUrl(url) {
         // may be null
         return cachedUrl;
     });
-}
+};
 
-milestones.urls = function urls() { return JSON.parse(localStorage.getItem('urls') || '[]'); }
+milestones.urls = function urls() { return JSON.parse(localStorage.getItem('urls') || '[]'); };
 milestones.getUrl = function getUrl(url) { return JSON.parse(localStorage.getItem(url)); };
 
 milestones.add = function add(title, organization, project, milestoneData) {
@@ -156,8 +156,8 @@ milestones.add = function add(title, organization, project, milestoneData) {
     localStorage.setItem(organization, JSON.stringify(org));
     storeKeyIfNotExists('orgs', organization);
     return org.milestones[title];
-}
-milestones.orgs = function orgs() { return JSON.parse(localStorage.getItem('orgs') || '[]'); }
+};
+milestones.orgs = function orgs() { return JSON.parse(localStorage.getItem('orgs') || '[]'); };
 milestones.getOrg = function getOrg(organization) {  return JSON.parse(localStorage.getItem(organization)); };
 
 module.exports = milestones;
