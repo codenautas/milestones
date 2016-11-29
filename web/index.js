@@ -6,8 +6,8 @@ window.onload = function() {
     var organization = 'codenautas';
     getID('title').textContent = organization.toUpperCase();
     getID('refresh').addEventListener('click', function(){
-        var tabla = getID('milestones');
-        while(tabla.firstChild) { tabla.removeChild(tabla.firstChild); }
+        var mstones = getID('milestones');
+        while(mstones.firstChild) { mstones.removeChild(mstones.firstChild); }
         var status = getID('status');
         status.textContent = 'Fetching milestones...';
         milestones.fetchAll({org:organization}).then(function(milestones){
@@ -18,11 +18,11 @@ window.onload = function() {
             }
             // falta el concepto de may-be-outdated!
             var html = jsToHtml.html;
+            var trs = [];
             Object.keys(milestones).sort().forEach(function(key) {
                 //console.log("key", key)
                 var ms = milestones[key];
                 //console.log(JSON.stringify(ms));
-                var trs = [];
                 var titlesClass = {class:'titles'};
                 trs.push(html.tr({class:'milestone-row'}, [
                     html.td({class:'milestone-name'}, key),
@@ -51,8 +51,9 @@ window.onload = function() {
                     ]));
                 });
                 trs.push(html.tr([html.td({colspan:8}, [html.hr()])]));
-                tabla.appendChild(html.tr([html.td([html.table(trs)])]).create());
+                // mstones.appendChild(html.tr([html.td([html.table(trs)])]).create());
             });
+            mstones.appendChild(html.table(trs).create());
         }).then(function() {
             status.textContent = 'Listo.';
         });
