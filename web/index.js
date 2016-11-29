@@ -16,27 +16,28 @@ window.onload = function() {
                 getID('status').textContent = 'Request limit reachead. New data will be available at '+milestones.rateLimitReset;
                 delete milestones.rateLimitReset;
             }
-            
+            // falta el concepto de may-be-outdated!
             var html = jsToHtml.html;
             Object.keys(milestones).sort().forEach(function(key) {
                 //console.log("key", key)
                 var ms = milestones[key];
                 console.log(JSON.stringify(ms));
                 var trs = [];
-                trs.push(html.tr([
+                var titlesClass = {class:'titles'};
+                trs.push(html.tr({class:'milestone-row'}, [
                     html.td({class:'milestone-name'}, key),
                     html.td(" "),
                     html.td(" "),
-                    html.td("Last updated"),
-                    html.td("Complete"),
-                    html.td("Open"),
-                    html.td("Closed"),
+                    html.td(titlesClass, "Last updated"),
+                    html.td(titlesClass, "Complete"),
+                    html.td(titlesClass, "Open"),
+                    html.td(titlesClass, "Closed"),
                     html.td(" ")
                 ]));
                 Object.keys(ms.projects).sort().forEach(function(pkey) {
                     var project = ms.projects[pkey];
                     //console.log("pkey", project)
-                    trs.push(html.tr([
+                    trs.push(html.tr({class:'milestone-repository'}, [
                         html.td({class:'repository-name'}, pkey),
                         html.td({class:'state'}, project.state),
                         html.td({class:'updated-at'}, project.daysFromUpdate),
