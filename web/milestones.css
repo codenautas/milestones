@@ -1,3 +1,6 @@
+html {
+    font-family: sans-serif;
+}
 .milestone-row  { }	
 .repository-row  {
     background-color: white;
@@ -10,8 +13,10 @@
     font-weight: bold;
     font-size: 20px;
 }	
-.repository-name { }	
-.state { }	
+.repository-name {
+    color: #4183c4;
+}	
+.state { font-weight: bold; }	
 .closed-at { }	
 .due-on 	td { }	
 .updated-at  { }	

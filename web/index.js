@@ -29,25 +29,28 @@ window.onload = function() {
                     html.td(" "),
                     html.td(" "),
                     html.td(titlesClass, "Last updated"),
-                    html.td(titlesClass, "Complete"),
-                    html.td(titlesClass, "Open"),
-                    html.td(titlesClass, "Closed"),
+                    html.td(titlesClass, "complete"),
+                    html.td(titlesClass, "open"),
+                    html.td(titlesClass, "closed"),
                     html.td(" ")
                 ]));
                 Object.keys(ms.projects).sort().forEach(function(pkey) {
                     var project = ms.projects[pkey];
-                    //console.log("pkey", project)
+                    var isClosed = project.state==='closed';
+                    var daysSinceUpdate = project.daysFromUpdate+' days ago';
                     trs.push(html.tr({class:project.mayBeOutdated?'may-be-outdated':'repository-row'}, [
-                        html.td({class:'repository-name'}, pkey),
-                        html.td({class:'state'}, project.state),
-                        html.td({class:'updated-at'}, project.daysFromUpdate),
-                        html.td({class:(project.state==='closed' ? 'closed-at' : 'due-on')}, project.date),
+                        //https://github.com/codenautas/txt-to-sql/milestones
+                        html.td([html.a({class:'repository-name', href:'https://github.com/'+organization+'/'+pkey+'/milestones'}, pkey)]),
+                        html.td({class:'state'}, isClosed?project.state+' '+daysSinceUpdate:''),
+                        html.td({class:'updated-at'}, daysSinceUpdate),
+                        html.td({class:isClosed?'closed-at':'due-on'}, project.date),
                         html.td({class:'percent-complete'}, project.pctComplete+'%'),
                         html.td({class:'open-issues'}, project.issues.open),
                         html.td({class:'closed-issues'}, project.issues.closed),
                         html.td("progress bar")
                     ]));
                 });
+                trs.push(html.tr([html.td({colspan:8}, [html.hr()])]));
                 tabla.appendChild(html.tr([html.td([html.table(trs)])]).create());
             });
         }).then(function() {
