@@ -1,6 +1,10 @@
 .milestone-row  { }	
-.repository-row  { }	
-.may-be-outdated  { }	
+.repository-row  {
+    background-color: white;
+}	
+.may-be-outdated  {
+    background-color: gray;
+}
 .delayed { }	
 .milestone-name {
     font-weight: bold;

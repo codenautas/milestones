@@ -25,9 +25,15 @@ milestones.fetchFun = function(url, opts) {
     return fetch(url, opts);
 };
 
-function finishRequest(out, organization, headers) {
+function finalizeRequest(out, organization, response, project) {
     out = milestones.getOrg(organization) || {};
-    out.rateLimitReset = new Date(headers.get('X-RateLimit-Reset') * 1000);
+    //console.log("finalizeRequest: out with project", (project.name in out))
+    //console.log("finalizeRequest: project", project)
+    //console.log("finalizeRequest: response", "unchanged", response.unchanged)
+    if(project && project.name in out && ! response.unchanged) {
+        out[project.name].mayBeOutdated = true;
+    }
+    out.rateLimitReset = new Date(response.headers.get('X-RateLimit-Reset') * 1000);
     return out;
 }
 
@@ -47,16 +53,16 @@ milestones.fetchAll = function fetchAll(opts) {
         //console.log(JSON.stringify(response))
         //console.log(response.body())
         if(! projects || response.limitReached) {
-            return finishRequest(opts.out, opts.org, headers);
+            return finalizeRequest(opts.out, opts.org, response);
         } else {
             return Promise.all(
-                projects.map(function(project){
+                projects.sort().map(function(project){
                     var url = 'https://api.github.com/repos/'+opts.org+'/'+project.name+'/milestones?state=all';
                     return milestones.fetchUrl(url).then(function(response){
                         headers = response.headers;
                         var mstones = response.body();
                         if(! mstones || response.limitReached) {
-                            return finishRequest(opts.out, opts.org, headers);
+                            return finalizeRequest(opts.out, opts.org, response, project);
                         } else {
                             mstones.forEach(function(milestone){
                                 milestones.addOrg(milestone.title, opts.org, project.name, milestone);
