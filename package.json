@@ -26,8 +26,6 @@
     "mocha": "~3.1.2",
     "node-fetch": "~1.6.3",
     "node-persist": "~2.0.7",
-    "sinon": "~1.17.6",
-    
-    "best-promise": "~0.2.4"
+    "sinon": "~1.17.6"
   }
 }
