@@ -2,13 +2,22 @@
 .repository-row  { }	
 .may-be-outdated  { }	
 .delayed { }	
-.milestone-name { }	
+.milestone-name {
+    font-weight: bold;
+    font-size: 20px;
+}	
 .repository-name { }	
 .state { }	
 .closed-at { }	
 .due-on 	td { }	
 .updated-at  { }	
-.percent-complete { }	
-.open-issues  { }	
-.closed-issues  { }	
+.percent-complete {
+    font-weight: bold;
+}
+.open-issues  {
+    font-weight: bold;
+}	
+.closed-issues  {
+    font-weight: bold;
+}
 .titles { }	

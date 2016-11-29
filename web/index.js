@@ -6,21 +6,26 @@ window.onload = function() {
     var organization = 'codenautas';
     getID('title').textContent = organization.toUpperCase();
     getID('refresh').addEventListener('click', function(){
+        var tabla = getID('milestones');
+        while(tabla.firstChild) { tabla.removeChild(tabla.firstChild); }
+        var status = getID('status');
+        status.textContent = 'Fetching milestones...';
         milestones.fetchAll({org:organization}).then(function(milestones){
             // document.getElementById('milestones').textContent=JSON.stringify(milestones);
             if(milestones.rateLimitReset) {
                 getID('status').textContent = 'Request limit reachead. New data will be available at '+milestones.rateLimitReset;
                 delete milestones.rateLimitReset;
             }
-            var tabla = getID('milestones');
+            
             var html = jsToHtml.html;
-            Object.keys(milestones).forEach(function(key) {
+            Object.keys(milestones).sort().forEach(function(key) {
                 //console.log("key", key)
                 var ms = milestones[key];
                 console.log(JSON.stringify(ms));
                 var trs = [];
                 trs.push(html.tr([
-                    html.td([ html.h3(key)]),
+                    html.td({class:'milestone-name'}, key),
+                    html.td(" "),
                     html.td(" "),
                     html.td("Last updated"),
                     html.td("Complete"),
@@ -28,21 +33,24 @@ window.onload = function() {
                     html.td("Closed"),
                     html.td(" ")
                 ]));
-                Object.keys(ms.projects).forEach(function(pkey) {
+                Object.keys(ms.projects).sort().forEach(function(pkey) {
                     var project = ms.projects[pkey];
                     //console.log("pkey", project)
                     trs.push(html.tr([
-                        html.td([html.h4(pkey)]),
-                        html.td(project.daysFromUpdate),
-                        html.td(project.date),
-                        html.td(project.pctComplete+'%'),
-                        html.td(project.issues.open),
-                        html.td(project.issues.closed),
+                        html.td({class:'repository-name'}, pkey),
+                        html.td({class:'state'}, project.state),
+                        html.td({class:'updated-at'}, project.daysFromUpdate),
+                        html.td({class:(project.state==='closed' ? 'closed-at' : 'due-on')}, project.date),
+                        html.td({class:'percent-complete'}, project.pctComplete+'%'),
+                        html.td({class:'open-issues'}, project.issues.open),
+                        html.td({class:'closed-issues'}, project.issues.closed),
                         html.td("progress bar")
                     ]));
                 });
                 tabla.appendChild(html.tr([html.td([html.table(trs)])]).create());
             });
+        }).then(function() {
+            status.textContent = 'Listo.';
         });
     });
 }
