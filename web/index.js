@@ -1,9 +1,8 @@
 function getID(name) { return document.getElementById(name); }
 
 window.onload = function() {
-    //var url = window.location.toString();
-    //var organization = url.split('?')[1];
-    var organization = 'codenautas';
+    var url = window.location.toString();
+    var organization = url.split('?')[1] || 'codenautas';
     getID('title').textContent = organization.toUpperCase();
     getID('refresh').addEventListener('click', function(){
         var mstones = getID('milestones');
@@ -47,7 +46,7 @@ window.onload = function() {
                         html.td({class:'percent-complete'}, project.pctComplete+'%'),
                         html.td({class:'open-issues'}, project.issues.open),
                         html.td({class:'closed-issues'}, project.issues.closed),
-                        html.td("progress bar")
+                        html.td([html.span({class:'progress-bar-small'}, [html.span({class:'progress', style:'width: '+project.pctComplete+'%'}," ")])])
                     ]));
                 });
                 trs.push(html.tr([html.td({colspan:8}, [html.hr()])]));
@@ -56,6 +55,8 @@ window.onload = function() {
             mstones.appendChild(html.table(trs).create());
         }).then(function() {
             status.textContent = 'Listo.';
+        }).catch(function(err) {
+            status.textContent = err.message
         });
     });
 }
