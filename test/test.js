@@ -60,7 +60,8 @@ describe('milestones', function(){
         // ATENCION: para correr los siguientes nunca saltear este
         it('fetch all', function(done){
             sinon.stub(milestones, "fetchFun", fetchAllMock);
-            milestones.fetchAll(salida, org).then(function(salida) {
+            milestones.fetchAll({org:org}).then(function(out) {
+                salida = out;
                 //console.log("milestones.urls()", milestones.urls())
                 expect(milestones.urls().length).to.eql(Object.keys(mockUrls).length);
                 expect(Object.keys(salida).length).to.eql(8);
@@ -72,6 +73,7 @@ describe('milestones', function(){
                 milestones.fetchFun.restore();
                 done();
             }).catch(function(err) {
+                console.log(err.stack)
                 done(err);
             });
         });
@@ -215,8 +217,8 @@ describe('milestones', function(){
         });
         it('read only changed requests', function(done){
             this.timeout(20000);
-            var salida={};
-            milestones.fetchAll(salida, org).then(function(salida) {
+            milestones.fetchAll({org:org}).then(function(salida) {
+                console.log('salida', salida)
                 if(salida.rateLimitReset) {
                     console.log('Request avalability ['+salida.rateLimitReset+']');
                 }

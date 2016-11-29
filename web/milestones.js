@@ -33,29 +33,31 @@ milestones.milisecondsToDays = function milisecondsToDays(miliseconds) {
     return parseInt(miliseconds / (1000*60*60*24));
 };
 
-milestones.fetchAll = function fetchAll(output, organization, page) {
-    page=page||1;
-    var baseUrl = 'https://api.github.com/orgs/'+organization+'/repos?page='+page;
+milestones.fetchAll = function fetchAll(opts) {
+    if(! opts.org) { throw new Error('organizations is required'); }
+    opts.out = opts.out || {};
+    opts.page = opts.page || 1;
+    var baseUrl = 'https://api.github.com/orgs/'+opts.org+'/repos?page='+opts.page;
     var headers;
     return milestones.fetchUrl(baseUrl).then(function(response){
         headers = response.headers;
         var projects = response.url.body;
         if(! projects) {
-            return finishRequest(output, organization, headers);
+            return finishRequest(opts.out, opts.org, headers);
         } else {
             return Promise.all(
                 projects.map(function(project){
-                    var url = 'https://api.github.com/repos/'+organization+'/'+project.name+'/milestones?state=all';
+                    var url = 'https://api.github.com/repos/'+opts.org+'/'+project.name+'/milestones?state=all';
                     return milestones.fetchUrl(url).then(function(response){
                         headers = response.headers;
                         var mstones = response.url.body;
                         if(! mstones) {
-                            return finishRequest(output, organization, headers);
+                            return finishRequest(opts.out, opts.org, headers);
                         } else {
                             mstones.forEach(function(milestone){
-                                milestones.add(milestone.title, organization, project.name, milestone);
-                                output[milestone.title] = output[milestone.title] || { projects: {} };
-                                //output[milestone.title].projects[project.name] = milestone;
+                                milestones.add(milestone.title, opts.org, project.name, milestone);
+                                opts.out[milestone.title] = opts.out[milestone.title] || { projects: {} };
+                                //opts.out[milestone.title].projects[project.name] = milestone;
                                 var totalIssues = milestone.open_issues + milestone.closed_issues;
                                 var pct = 0;
                                 if(0===milestone.open_issues) {
@@ -63,8 +65,8 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                                 } else if(0!==milestone.closed_issues) {
                                     pct = Math.round(milestone.open_issues/totalIssues*100);
                                 }
-                                output[milestone.title].projects[project.name] = {
-                                    url: 'https://github.com/'+organization+'/'+project.name+'/milestones',
+                                opts.out[milestone.title].projects[project.name] = {
+                                    url: 'https://github.com/'+opts.org+'/'+project.name+'/milestones',
                                     state: milestone.state,
                                     date: milestone.closed_at || milestone.due_on, // closed_at es null si está abierto
                                     daysFromUpdate: milestones.milisecondsToDays(Date.now()-new Date(milestone.updated_at).getTime()),
@@ -76,9 +78,11 @@ milestones.fetchAll = function fetchAll(output, organization, page) {
                     });
                 })).then(function(){
                 if(projects.length /* && false */){
-                    return milestones.fetchAll(output, organization, page+1);
+                    ++opts.page;
+                    return milestones.fetchAll(opts);
+                    //return milestones.fetchAll(opts.out, opts.org, page+1);
                 }
-                return output;
+                return opts.out;
             });
         }
     });
