@@ -25,14 +25,38 @@ milestones.fetchFun = function(url, opts) {
     return fetch(url, opts);
 };
 
+function parseMilestones(organization, project, mstones, out) {
+    mstones.forEach(function(milestone){
+        milestones.addOrg(milestone.title, organization, project.name, milestone);
+        out[milestone.title] = out[milestone.title] || { projects: {} };
+        //opts.out[milestone.title].projects[project.name] = milestone;
+        var totalIssues = milestone.open_issues + milestone.closed_issues;
+        var pct = 0;
+        if(0===milestone.open_issues) {
+            pct = 100;
+        } else if(0!==milestone.closed_issues) {
+            pct = Math.round(milestone.open_issues/totalIssues*100);
+        }
+        out[milestone.title].projects[project.name] = {
+            url: 'https://github.com/'+organization+'/'+project.name+'/milestones',
+            state: milestone.state,
+            date: milestone.closed_at || milestone.due_on, // closed_at es null si está abierto
+            daysFromUpdate: milestones.milisecondsToDays(Date.now()-new Date(milestone.updated_at).getTime()),
+            pctComplete: pct,
+            issues: {open:milestone.open_issues, closed:milestone.closed_issues}
+        };
+    });
+}
 function finalizeRequest(out, organization, response, project) {
-    out = milestones.getOrg(organization) || {};
-    //console.log("finalizeRequest: out with project", (project.name in out))
-    //console.log("finalizeRequest: project", project)
-    //console.log("finalizeRequest: response", "unchanged", response.unchanged)
-    if(project && project.name in out && ! response.unchanged) {
-        out[project.name].mayBeOutdated = true;
-    }
+    var org = milestones.getOrg(organization) || {};
+    Object.keys(org).forEach(function(mstone) {
+        console.log("mstone", org[mstone])
+        Object.keys(org[mstone]).forEach(function(projectName) {
+            console.log("PPPPP", org[mstone][projectName])
+            parseMilestones(organization, projectName, org[mstone][projectName].body, out);
+            out[mstone].mayBeOutdated = true;
+        });
+    });
     out.rateLimitReset = new Date(response.headers.get('X-RateLimit-Reset') * 1000);
     return out;
 }
@@ -64,33 +88,13 @@ milestones.fetchAll = function fetchAll(opts) {
                         if(! mstones || response.limitReached) {
                             return finalizeRequest(opts.out, opts.org, response, project);
                         } else {
-                            mstones.forEach(function(milestone){
-                                milestones.addOrg(milestone.title, opts.org, project.name, milestone);
-                                opts.out[milestone.title] = opts.out[milestone.title] || { projects: {} };
-                                //opts.out[milestone.title].projects[project.name] = milestone;
-                                var totalIssues = milestone.open_issues + milestone.closed_issues;
-                                var pct = 0;
-                                if(0===milestone.open_issues) {
-                                    pct = 100;
-                                } else if(0!==milestone.closed_issues) {
-                                    pct = Math.round(milestone.open_issues/totalIssues*100);
-                                }
-                                opts.out[milestone.title].projects[project.name] = {
-                                    url: 'https://github.com/'+opts.org+'/'+project.name+'/milestones',
-                                    state: milestone.state,
-                                    date: milestone.closed_at || milestone.due_on, // closed_at es null si está abierto
-                                    daysFromUpdate: milestones.milisecondsToDays(Date.now()-new Date(milestone.updated_at).getTime()),
-                                    pctComplete: pct,
-                                    issues: {open:milestone.open_issues, closed:milestone.closed_issues}
-                                };
-                            });
+                            parseMilestones(opts.org, project, mstones, opts.out);
                         }
                     });
                 })).then(function(){
                 if(projects.length /* && false */){
                     ++opts.page;
                     return milestones.fetchAll(opts);
-                    //return milestones.fetchAll(opts.out, opts.org, page+1);
                 }
                 return opts.out;
             });
@@ -154,12 +158,15 @@ milestones.addOrg = function addOrg(title, organization, project, milestoneData)
     var org = JSON.parse(localStorage.getItem(organization) || '{}');
     org.milestones = org.milestones || {};
     org.milestones[title] = org.milestones[title] || {projects: {}};
-    org.milestones[title].projects[project.name] = milestoneData;
+    org.milestones[title].projects[project] = milestoneData;
     localStorage.setItem(organization, JSON.stringify(org));
     storeKeyIfNotExists('orgs', organization);
     return org.milestones[title];
 };
 milestones.orgs = function orgs() { return JSON.parse(localStorage.getItem('orgs') || '[]'); };
-milestones.getOrg = function getOrg(organization) {  return JSON.parse(localStorage.getItem(organization)).milestones; };
+milestones.getOrg = function getOrg(organization) {
+    var org = localStorage.getItem(organization);
+    return org ? JSON.parse(org).milestones : null;
+};
 
 module.exports = milestones;

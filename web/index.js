@@ -18,9 +18,9 @@ window.onload = function() {
         var status = getID('status');
         status.textContent = 'Fetching milestones...';
         milestones.fetchAll({org:organization}).then(function(milestones){
-            // document.getElementById('milestones').textContent=JSON.stringify(milestones);
+            //getID('milestones').textContent=JSON.stringify(milestones);
             if(milestones.rateLimitReset) {
-                getID('status').textContent = 'Request limit reachead. New data will be available at '+milestones.rateLimitReset;
+                getID('status').textContent += ' Request limit reachead. New data will be available at '+milestones.rateLimitReset+'. ';
                 delete milestones.rateLimitReset;
             }
             // falta el concepto de may-be-outdated!
@@ -43,6 +43,7 @@ window.onload = function() {
                 ]));
                 Object.keys(ms.projects).sort().forEach(function(pkey) {
                     var project = ms.projects[pkey];
+                    console.log("project", JSON.stringify(project));
                     var isClosed = project.state==='closed';
                     var daysSinceUpdate = project.daysFromUpdate+' days ago';
                     trs.push(html.tr({class:project.mayBeOutdated?'may-be-outdated':'repository-row'}, [
@@ -62,9 +63,10 @@ window.onload = function() {
             });
             mstones.appendChild(html.table(trs).create());
         }).then(function() {
-            status.textContent = 'Listo.';
+            status.textContent += 'Listo.';
         }).catch(function(err) {
-            status.textContent = err.message
+            console.log(err.stack)
+            status.textContent = err.message + '\n<pre>' + err.stack + '\n</pre>\n';
         });
     });
 }
