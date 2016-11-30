@@ -4,9 +4,17 @@ window.onload = function() {
     var url = window.location.toString();
     var organization = url.split('?')[1] || 'codenautas';
     getID('title').textContent = organization.toUpperCase();
-    getID('refresh').addEventListener('click', function(){
+    function resetMilestones() {
         var mstones = getID('milestones');
         while(mstones.firstChild) { mstones.removeChild(mstones.firstChild); }
+        return mstones;
+    }
+    getID('clear').addEventListener('click', function(){
+        resetMilestones();
+        localStorage.clear();
+    });
+    getID('refresh').addEventListener('click', function(){
+        var mstones = resetMilestones();
         var status = getID('status');
         status.textContent = 'Fetching milestones...';
         milestones.fetchAll({org:organization}).then(function(milestones){
