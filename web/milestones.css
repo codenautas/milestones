@@ -1,5 +1,6 @@
 html {
     font-family: sans-serif;
+    font-size: 14px;
 }
 .milestone-row  { }	
 .repository-row  {
@@ -10,11 +11,14 @@ html {
 }
 .delayed { }	
 .milestone-name {
-    font-weight: bold;
+    
     font-size: 20px;
 }	
 .repository-name {
+    background-color: #fafafa;
     color: #4183c4;
+    font-size: 16px;
+    font-weight: bold;
 }	
 .state { font-weight: bold; }	
 .closed-at { }	
@@ -30,3 +34,22 @@ html {
     font-weight: bold;
 }
 .titles { }
+
+#progress {
+ background-color: #eeeeee;
+ width: 140px;   
+ position: relative;
+ padding: 0px;
+ border-radius: 25px;
+}
+
+#percent {
+ position: absolute;   
+ left: 50%;
+}
+
+#bar {
+ height: 10px;
+ background-color: #44C66C;
+ border-radius: 25px;
+}

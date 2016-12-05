@@ -34,8 +34,8 @@ window.onload = function() {
                 trs.push(html.tr({class:'milestone-row'}, [
                     html.td({class:'milestone-name'}, key),
                     html.td(" "),
-                    html.td(" "),
-                    html.td(titlesClass, "Last updated"),
+                    html.td(titlesClass, "date"),
+                    html.td("last updated"),
                     html.td(titlesClass, "complete"),
                     html.td(titlesClass, "open"),
                     html.td(titlesClass, "closed"),
@@ -46,16 +46,24 @@ window.onload = function() {
                     console.log("project", JSON.stringify(project));
                     var isClosed = project.state==='closed';
                     var daysSinceUpdate = project.daysFromUpdate+' days ago';
+                    var d = new Date(project.date);
+                    var showDate = d.getDay()+'/'+d.getMonth()+'/'+d.getFullYear();
                     trs.push(html.tr({class:project.mayBeOutdated?'may-be-outdated':'repository-row'}, [
                         //https://github.com/codenautas/txt-to-sql/milestones
                         html.td([html.a({class:'repository-name', href:'https://github.com/'+organization+'/'+pkey+'/milestones'}, pkey)]),
                         html.td({class:'state'}, isClosed?project.state+' '+daysSinceUpdate:''),
+                        // html.td({class:isClosed?'closed-at':'due-on'}, project.date),
+                        html.td({class:isClosed?'closed-at':'due-on'}, showDate),
                         html.td({class:'updated-at'}, daysSinceUpdate),
-                        html.td({class:isClosed?'closed-at':'due-on'}, project.date),
                         html.td({class:'percent-complete'}, project.pctComplete+'%'),
                         html.td({class:'open-issues'}, project.issues.open),
                         html.td({class:'closed-issues'}, project.issues.closed),
-                        html.td([html.span({class:'progress-bar-small'}, [html.span({class:'progress', style:'width: '+project.pctComplete+'%'}," ")])])
+                        html.td([
+                            html.div({id:'progress'}, [
+                                html.span({id:'percent'}),
+                                html.div({id:'bar', style:'width: '+project.pctComplete+'%'})
+                            ])
+                       ])
                     ]));
                 });
                 trs.push(html.tr([html.td({colspan:8}, [html.hr()])]));

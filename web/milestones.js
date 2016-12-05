@@ -29,7 +29,6 @@ function parseMilestones(organization, project, mstones, out) {
     mstones.forEach(function(milestone){
         milestones.addOrg(milestone.title, organization, project.name, milestone);
         out[milestone.title] = out[milestone.title] || { projects: {} };
-        //opts.out[milestone.title].projects[project.name] = milestone;
         var totalIssues = milestone.open_issues + milestone.closed_issues;
         var pct = 0;
         if(0===milestone.open_issues) {
@@ -50,9 +49,7 @@ function parseMilestones(organization, project, mstones, out) {
 function finalizeRequest(out, organization, response, project) {
     var org = milestones.getOrg(organization) || {};
     Object.keys(org).forEach(function(mstone) {
-        console.log("mstone", org[mstone])
         Object.keys(org[mstone]).forEach(function(projectName) {
-            console.log("PPPPP", org[mstone][projectName])
             parseMilestones(organization, projectName, org[mstone][projectName].body, out);
             out[mstone].mayBeOutdated = true;
         });
