@@ -1,5 +1,17 @@
 function getID(name) { return document.getElementById(name); }
 
+function fireClick(node){
+    if (document.createEvent) {
+        var evt = document.createEvent('MouseEvents');
+        evt.initEvent('click', true, false);
+        node.dispatchEvent(evt);    
+    } else if (document.createEventObject) {
+        node.fireEvent('onclick') ; 
+    } else if (typeof node.onclick == 'function') {
+        node.onclick(); 
+    }
+}
+
 window.onload = function() {
     var url = window.location.toString();
     var organization = url.split('?')[1] || 'codenautas';
@@ -14,7 +26,8 @@ window.onload = function() {
         localStorage.clear();
         status.textContent = 'Database cleared.';
     });
-    getID('refresh').addEventListener('click', function(){
+    var refresh = getID('refresh');
+    refresh.addEventListener('click', function(){
         var mstones = resetMilestones();
         var status = getID('status');
         status.textContent = 'Fetching milestones...';
@@ -76,4 +89,5 @@ window.onload = function() {
             status.textContent = err.message + '\n<pre>' + err.stack + '\n</pre>\n';
         });
     });
+    fireClick(refresh);
 }
