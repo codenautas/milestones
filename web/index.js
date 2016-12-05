@@ -12,6 +12,7 @@ window.onload = function() {
     getID('clear').addEventListener('click', function(){
         resetMilestones();
         localStorage.clear();
+        status.textContent = 'Database cleared.';
     });
     getID('refresh').addEventListener('click', function(){
         var mstones = resetMilestones();
@@ -35,7 +36,7 @@ window.onload = function() {
                     html.td({class:'milestone-name'}, key),
                     html.td(" "),
                     html.td(titlesClass, "date"),
-                    html.td("last updated"),
+                    html.td(titlesClass, "last updated"),
                     html.td(titlesClass, "complete"),
                     html.td(titlesClass, "open"),
                     html.td(titlesClass, "closed"),
@@ -43,16 +44,14 @@ window.onload = function() {
                 ]));
                 Object.keys(ms.projects).sort().forEach(function(pkey) {
                     var project = ms.projects[pkey];
-                    console.log("project", JSON.stringify(project));
                     var isClosed = project.state==='closed';
                     var daysSinceUpdate = project.daysFromUpdate+' days ago';
                     var d = new Date(project.date);
-                    var showDate = d.getDay()+'/'+d.getMonth()+'/'+d.getFullYear();
+                    var showDate = String('0'+d.getDay()).slice(-2)+'/'+String('0'+d.getMonth()).slice(-2)+'/'+d.getFullYear();
                     trs.push(html.tr({class:project.mayBeOutdated?'may-be-outdated':'repository-row'}, [
                         //https://github.com/codenautas/txt-to-sql/milestones
                         html.td([html.a({class:'repository-name', href:'https://github.com/'+organization+'/'+pkey+'/milestones'}, pkey)]),
                         html.td({class:'state'}, isClosed?project.state+' '+daysSinceUpdate:''),
-                        // html.td({class:isClosed?'closed-at':'due-on'}, project.date),
                         html.td({class:isClosed?'closed-at':'due-on'}, showDate),
                         html.td({class:'updated-at'}, daysSinceUpdate),
                         html.td({class:'percent-complete'}, project.pctComplete+'%'),
@@ -67,9 +66,9 @@ window.onload = function() {
                     ]));
                 });
                 trs.push(html.tr([html.td({colspan:8}, [html.hr()])]));
-                // mstones.appendChild(html.tr([html.td([html.table(trs)])]).create());
             });
             mstones.appendChild(html.table(trs).create());
+            delete trs;
         }).then(function() {
             status.textContent += 'Listo.';
         }).catch(function(err) {

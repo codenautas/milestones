@@ -21,19 +21,24 @@ html {
     font-weight: bold;
 }	
 .state { font-weight: bold; }	
-.closed-at { }	
-.due-on 	td { }	
-.updated-at  { }	
+.closed-at { text-align: right; }	
+.due-on 	{ }	
+.updated-at  { text-align: right; }	
 .percent-complete {
     font-weight: bold;
+    text-align: right;
 }
 .open-issues  {
     font-weight: bold;
+    text-align: right;
 }	
 .closed-issues  {
     font-weight: bold;
+    text-align: right;
 }
-.titles { }
+.titles {
+    text-align: center;
+}
 
 #progress {
  background-color: #eeeeee;
