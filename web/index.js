@@ -60,7 +60,7 @@ window.onload = function() {
                     var isClosed = project.state==='closed';
                     var daysSinceUpdate = project.daysFromUpdate+' days ago';
                     var d = new Date(project.date);
-                    var showDate = String('0'+d.getDay()).slice(-2)+'/'+String('0'+d.getMonth()).slice(-2)+'/'+d.getFullYear();
+                    var showDate = String('0'+d.getDate()).slice(-2)+'/'+String('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear();
                     trs.push(html.tr({class:project.mayBeOutdated?'may-be-outdated':'repository-row'}, [
                         //https://github.com/codenautas/txt-to-sql/milestones
                         html.td([html.a({class:'repository-name', href:'https://github.com/'+organization+'/'+pkey+'/milestones'}, pkey)]),
