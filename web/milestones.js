@@ -30,11 +30,9 @@ function parseMilestones(organization, project, mstones, out) {
         milestones.addOrg(milestone.title, organization, project.name, milestone);
         out[milestone.title] = out[milestone.title] || { projects: {} };
         var totalIssues = milestone.open_issues + milestone.closed_issues;
-        var pct = 0;
-        if(0===milestone.open_issues) {
-            pct = 100;
-        } else if(0!==milestone.closed_issues) {
-            pct = Math.round(milestone.open_issues/totalIssues*100);
+        var pct = null;
+        if(totalIssues>0){
+            pct = Math.round(milestone.closed_issues/totalIssues*100);
         }
         out[milestone.title].projects[project.name] = {
             url: 'https://github.com/'+organization+'/'+project.name+'/milestones',

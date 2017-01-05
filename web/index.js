@@ -67,13 +67,13 @@ window.onload = function() {
                         html.td({class:'state'}, isClosed?project.state+' '+daysSinceUpdate:''),
                         html.td({class:isClosed?'closed-at':'due-on'}, showDate),
                         html.td({class:'updated-at'}, daysSinceUpdate),
-                        html.td({class:'percent-complete'}, project.pctComplete+'%'),
+                        html.td({class:'percent-complete'}, project.pctComplete==null?'':project.pctComplete+'%'),
                         html.td({class:'open-issues'}, project.issues.open),
                         html.td({class:'closed-issues'}, project.issues.closed),
                         html.td([
                             html.div({id:'progress'}, [
                                 html.span({id:'percent'}),
-                                html.div({id:'bar', style:'width: '+project.pctComplete+'%'})
+                                html.div({id:'bar', style:'width: '+(project.pctComplete||0)+'%'})
                             ])
                        ])
                     ]));

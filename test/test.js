@@ -103,12 +103,12 @@ describe('milestones', function(){
                  'milestones':{
                      url: 'https://github.com/codenautas/milestones/milestones',
                      state:'open', date:'2016-12-21T00:00:00Z', daysFromUpdate:setDFU('2016-11-12T17:00:18Z'),
-                     pctComplete:100, issues:{open:0,closed:0}
+                     pctComplete:null, issues:{open:0,closed:0}
                  },
                  'mini-tools':{
                      url: 'https://github.com/codenautas/mini-tools/milestones',
                      state:'open', date:'2016-10-17T00:00:00Z', daysFromUpdate:setDFU('2016-10-07T17:10:45Z'),
-                     pctComplete:100, issues:{open:0,closed:0}
+                     pctComplete:null, issues:{open:0,closed:0}
                  },
              }},
             {name:'Buena',
@@ -116,7 +116,7 @@ describe('milestones', function(){
                  'backend-plus':{
                      url: 'https://github.com/codenautas/backend-plus/milestones',
                      state:'open', date:'2016-12-18T00:00:00Z', daysFromUpdate:setDFU('2016-11-21T01:38:34Z'),
-                     pctComplete:43, issues:{open:6,closed:8}
+                     pctComplete:57, issues:{open:6,closed:8}
                  }
              }},
             {name:'Bueno',
@@ -124,17 +124,17 @@ describe('milestones', function(){
                  'dialog-promise':{
                      url: 'https://github.com/codenautas/dialog-promise/milestones',
                      state:'open', date:'2017-04-15T00:00:00Z', daysFromUpdate:setDFU('2016-10-29T14:03:32Z'),
-                     pctComplete:33, issues:{open:1,closed:2}
+                     pctComplete:67, issues:{open:1,closed:2}
                  },
                  'login-plus':{
                      url: 'https://github.com/codenautas/login-plus/milestones',
                      state:'open', date:'2016-12-18T00:00:00Z', daysFromUpdate:setDFU('2016-11-16T20:32:10Z'),
-                     pctComplete:33, issues:{open:2,closed:4}
+                     pctComplete:67, issues:{open:2,closed:4}
                  },
                  'mini-tools':{
                      url: 'https://github.com/codenautas/mini-tools/milestones',
                      state:'open', date:'2016-12-21T00:00:00Z', daysFromUpdate:setDFU('2016-10-07T17:11:06Z'),
-                     pctComplete:100, issues:{open:0,closed:0}
+                     pctComplete:null, issues:{open:0,closed:0}
                  },
              }},
             {name:'Completo',
@@ -142,7 +142,7 @@ describe('milestones', function(){
                  'txt-to-sql':{
                      url: 'https://github.com/codenautas/txt-to-sql/milestones',
                      state:'open', date:'2017-03-31T00:00:00Z', daysFromUpdate:setDFU('2016-11-09T14:45:57Z'),
-                     pctComplete:17, issues:{open:1,closed:5}
+                     pctComplete:83, issues:{open:1,closed:5}
                  }
              }},
             {name:'Común',

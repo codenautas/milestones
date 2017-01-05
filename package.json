@@ -1,6 +1,6 @@
 {
   "name": "milestones",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "github milestones",
   "main": "web/milestones.js",
   "files": ["web"],
